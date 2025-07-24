@@ -2,37 +2,23 @@
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
+# Special config for raspberry pi 4
+
 { config, lib, pkgs, ... }:
 
 {
   nixpkgs.config.allowUnfree = true;
   imports = [ # Include the results of the hardware scan.
+      ./hardware/pi.nix
       ../modules/core/user.nix
       ../modules/core/ssh.nix
       ../modules/core/docker.nix
-    ];
-
-  # Use the systemd-boot EFI boot loader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.grub.device = "/dev/sda";
+      ../modules/optional/firewall/pi.nix
+      ../modules/optional/network/pi.nix
+  ];
   
-# Use latest kernel.
-  boot.kernelPackages = pkgs.linuxPackages_latest;
   # Set time zone.
   time.timeZone = "Europe/Madrid";
-  services.qemuGuest.enable = true;
-
-
-
-  networking = {
-    defaultGateway = {
-      address = "192.168.0.1";
-      interface = "ens18";
-    };
-    nameservers = [ "1.1.1.1" ];
-    enableIPv6 = false;
-  };
   
 
     # This option defines the first version of NixOS you have installed on this particular machine,
