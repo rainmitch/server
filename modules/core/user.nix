@@ -25,11 +25,12 @@
   };
   users.defaultUserShell = pkgs.zsh;
   environment.shells = with pkgs; [ zsh ];
-  
+  programs.gnupg.agent.enable = true;
   programs.git = {
     enable = true;
   };
   environment.systemPackages = with pkgs; [
     nano
+    gnupg
   ];
 }
