@@ -17,8 +17,8 @@
       ../modules/optional/network/pi.nix
       
       # Docker services
-      ../modules/optional/docker/wireguard.nix
-      ../modules/optional/docker/sillytavern.nix
+      #../modules/optional/docker/wireguard.nix
+      #../modules/optional/docker/sillytavern.nix
   ];
   
   # Set time zone.
