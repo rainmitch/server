@@ -15,6 +15,7 @@
       "usbhid"
       "usb_storage"
     ];
+    supportedFilesystems = ["nfs"];
     loader = {
       grub.enable = false;
       generic-extlinux-compatible.enable = true;

@@ -17,4 +17,7 @@
     hostName = "pi";
     enableIPv6 = false;
   };
+  boot.kernel.sysctl = {
+    "net.ipv4.ip_forward" = 1;
+  };
 }

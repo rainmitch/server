@@ -2,9 +2,6 @@
 {config, pkgs, ...}:
 
 {
-  boot.kernel.sysctl = {
-    "net.ipv4.ip_forward" = 1;
-  };
   # Disable the NixOS firewall in favor of nftables
   networking.firewall.enable = false;
   networking.nftables = {
@@ -29,6 +26,7 @@
           # Allow nfs from for 192.168.0.90
           #ip saddr 192.168.0.90/32 tcp dport {111, 2049, 4000, 4001, 4002, 20048} counter log accept
           #ip saddr 192.168.0.90/32 udp dport {111, 2049, 4000, 4001, 4002, 20048} counter log accept
+          ip saddr 192.168.0.0/24 tcp dport 8102 accept
         }
 
         chain forward {
@@ -40,10 +38,13 @@
 
           # Allow traffic from main0 bridge to external interface (for container outbound)
           iifname main0 oifname end0 accept;
+	  # Allow traffic from vpn to external interface
+          iifname tun0 oifname end0 accept;
 
           # Allow traffic from external interface (end0) to main0 bridge for the specific port
           # This is the rule that allows the DNAT'd traffic to reach the container
           iifname end0 oifname main0 tcp dport 9001 ip daddr 172.18.0.2 ip saddr 192.168.0.10 accept;
+          iifname end0 oifname tun0 udp dport 5120 ip saddr 192.145.124.3 accept;
 
           # Drop all other forwarded traffic by default (policy drop)
         }

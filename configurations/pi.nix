@@ -15,6 +15,10 @@
       ../modules/core/docker.nix
       ../modules/optional/firewall/pi.nix
       ../modules/optional/network/pi.nix
+      
+      # Docker services
+      ../modules/optional/docker/wireguard.nix
+      ../modules/optional/docker/sillytavern.nix
   ];
   
   # Set time zone.
