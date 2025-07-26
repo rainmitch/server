@@ -37,14 +37,14 @@
           ct state {established, related} accept;
 
           # Allow traffic from main0 bridge to external interface (for container outbound)
-          iifname main0 oifname end0 accept;
+          iifname main0 oifname ens18 accept;
 	  # Allow traffic from vpn to external interface
-          iifname tun0 oifname end0 accept;
+          iifname tun0 oifname ens18 accept;
 
-          # Allow traffic from external interface (end0) to main0 bridge for the specific port
+          # Allow traffic from external interface (ens18) to main0 bridge for the specific port
           # This is the rule that allows the DNAT'd traffic to reach the container
-          iifname end0 oifname main0 tcp dport 9001 ip daddr 172.18.0.2 ip saddr 192.168.0.10 accept;
-          iifname end0 oifname tun0 udp dport 5120 ip saddr 192.145.124.3 accept;
+          iifname ens18 oifname main0 tcp dport 9001 ip daddr 172.18.0.2 ip saddr 192.168.0.10 accept;
+          iifname ens18 oifname tun0 udp dport 5120 ip saddr 192.145.124.3 accept;
 
           # Drop all other forwarded traffic by default (policy drop)
         }
@@ -59,19 +59,19 @@
         chain prerouting {
           type nat hook prerouting priority 0;
           
-          # DNAT rule: Redirect incoming traffic on host's end0:9001
+          # DNAT rule: Redirect incoming traffic on host's ens18:9001
           # from 192.168.0.10 to the container's static IP:port
           # This runs BEFORE the 'forward' filter chain.
-          iifname end0 ip saddr 192.168.0.10 tcp dport 9001 dnat to 172.18.0.2:9001;
+          iifname ens18 ip saddr 192.168.0.10 tcp dport 9001 dnat to 172.18.0.2:9001;
         }
 
         chain postrouting {
           type nat hook postrouting priority 100;
 
           # SNAT/Masquerade rule: Change source IP of outbound traffic from Docker containers
-          # to the host's external IP (on end0).
+          # to the host's external IP (on ens18).
           # This allows containers to access the internet.
-          oifname end0 masquerade;
+          oifname ens18 masquerade;
         }
       }
     '';

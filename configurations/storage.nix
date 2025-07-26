@@ -21,5 +21,4 @@
     device = "/dev/disk/by-uuid/16540d33-e787-45c0-99c8-53c6865a1342";
     fsType = "ext4";
   };
-
 }

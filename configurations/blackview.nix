@@ -2,24 +2,28 @@
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
-# Special config for raspberry pi 4
-
 { config, lib, pkgs, ... }:
 
 {
   nixpkgs.config.allowUnfree = true;
   imports = [ # Include the results of the hardware scan.
-      ./hardware/pi.nix
+      ./hardware/blackview.nix
       ../modules/core/user.nix
       ../modules/core/ssh.nix
       ../modules/core/docker.nix
-      ../modules/optional/firewall/pi.nix
-      ../modules/optional/network/pi.nix
+      ../modules/optional/firewall/blackview.nix
+      ../modules/optional/network/blackview.nix
       
       # Docker services
       #../modules/optional/docker/wireguard.nix
       #../modules/optional/docker/sillytavern.nix
   ];
+
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
+  
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.supportedFilesystems = ["nfs"];
   
   # Set time zone.
   time.timeZone = "Europe/Madrid";
