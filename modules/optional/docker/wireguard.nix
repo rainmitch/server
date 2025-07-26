@@ -5,6 +5,7 @@
     image = "linuxserver/wireguard:latest";
     autoStart = true;
     pull = "always";
+    log-driver = "journald";
     environment = {
       PUID = "1000";
       PGID = "1000";

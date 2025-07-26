@@ -5,6 +5,7 @@
     image = "jc21/nginx-proxy-manager:latest";
     autoStart = true;
     pull = "always";
+    log-driver = "journald";
     environment = {
       DISABLE_IPV6 = "true";
     };

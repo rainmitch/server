@@ -40,4 +40,15 @@
     # This prevents it from failing if the network already exists
     serviceConfig.RemainAfterExit = true;
   };
+  # Include packages for secrets management
+  environment.systemPackages = with pkgs; [
+    sops
+    gnupg
+  ];
+  
+
+  #sops = {  
+  #  enable = true;
+  #  gnupg.home = "/var/lib/sops-nix";
+  #};
 }

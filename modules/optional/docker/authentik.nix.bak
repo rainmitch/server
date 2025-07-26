@@ -1,0 +1,26 @@
+{config, pkgs, lib, ...}:
+
+{
+  virtualisation.oci-containers.containers."authentik-postgres" = {
+    image = "library/postgres:16-alpine";
+    autoStart = true;
+    pull = "always";
+    log-driver = "journald";
+    environment = {
+      
+    };
+    volumes = [
+      ""
+    ];
+    ports = [
+      ""
+    ];
+    networks = ["main-network"];
+    extraOptions = [
+      "--ip=172.18.0.8"
+      "--health-cmd='[\"pg_isready -d \"]'"
+    ];
+  };
+}
+
+
