@@ -14,8 +14,10 @@
     metrics-addr = "0.0.0.0:9323";
     ipv6 = false;
     iptables = false;
+    ip6tables = false;
   };
   virtualisation.oci-containers.backend = "docker";
+  virtualisation.docker.extraOptions = "--dns=1.1.1.1 --dns=8.8.8.8";
   systemd.services.docker-custom-network = {
     description = "Create custom Docker network";
     # This service ensures the network exists before your containers start
@@ -37,5 +39,5 @@
     serviceConfig.Type = "oneshot";
     # This prevents it from failing if the network already exists
     serviceConfig.RemainAfterExit = true;
-};
+  };
 }

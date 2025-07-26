@@ -17,6 +17,7 @@
       ../modules/optional/network/blackview.nix
       
       # Docker services
+      ../modules/optional/docker/npm.nix
       ../modules/optional/docker/wireguard.nix
       #../modules/optional/docker/sillytavern.nix
   ];

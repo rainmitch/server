@@ -37,14 +37,12 @@
           # Allow established and related connections for forwarded traffic
           ct state {established, related} accept;
 
-          # Allow ALL traffic from main0 bridge to tun0 (VPN)
-          # This now covers both marked (VPN) and unmarked (local) traffic that needs forwarding.
-          # Unmarked traffic will naturally route via the main routing table to ens18,
-          # but it still needs to be allowed by the forward chain.
-          # Since local access (e.g. 172.18.0.X to 192.168.0.Y) is still a "forwarded" packet,
-          # this rule is key.
-          iifname main0 oifname tun0 accept; # For VPN-bound traffic
-          iifname main0 oifname ens18 accept; # For local network bound traffic
+          # Allow traffic from main0 bridge to external interface (for container outbound)
+          #iifname main0 oifname ens18 accept;
+	  
+          iifname main0 ip saddr != 172.18.0.4 oifname ens18 accept;
+          # Allow traffic from the specific Docker container (172.18.0.4) to tun0 (VPN)
+          iifname main0 ip saddr 172.18.0.4 oifname tun0 accept;
           
           # Allow traffic from vpn to external interface
           iifname tun0 oifname ens18 accept;
@@ -88,56 +86,14 @@
         }
       }
       table inet mangle {
-       set local_networks {
-          type ipv4_addr;
-          flags interval; # Allows specifying ranges like 192.168.0.0/24
-          elements = {
-              192.168.0.0/24, # Your local network on ens18
-              # Add other local networks if you have them, e.g.,
-              # 10.0.0.0/8,
-              # 172.16.0.0/12,
-          }
-        }
         chain prerouting {
           type filter hook prerouting priority -150; # Ensure this runs before other rules if needed
           policy accept;
 
-          # Rule 1: Do NOT mark traffic from main0 if its destination is a local network.
-          # This rule needs to be evaluated BEFORE the general marking rule.
-          iifname main0 ip daddr @local_networks accept; # Policy accept means it falls through this chain without being dropped.
-
-          # Rule 2: Mark ALL other traffic from main0 (172.18.0.0/24)
-          # that is NOT destined for a local network.
-          iifname main0 ip saddr 172.18.0.0/24 meta mark set 0x100 counter;
           # Mark traffic from the specific Docker container IP
-          #iifname main0 ip saddr 172.18.0.4 meta mark set 0x100 counter;
+          iifname main0 ip saddr 172.18.0.4 meta mark set 0x100 counter;
         }
       }
     '';
   };
-  systemd.services.docker-vpn-routing = {
-    description = "Configure policy routing for Docker container via VPN";
-    wantedBy = [ "network-online.target" ];
-    after = [ "network-online.target" "docker.service" "nftables.service" ];
-    script = ''
-      # Add the default route for the specific table
-      ${pkgs.iproute2}/bin/ip route add default via 192.145.124.3 dev tun0 table 200
-      
-      # Add the policy routing rule
-      ${pkgs.iproute2}/bin/ip rule add fwmark 0x100 table 200
-    '';
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true; # Keep the rules active even after the script finishes
-      User = "root"; # Ensure the script runs as root to manage network rules
-      
-      # Correct way to define cleanup actions when the service is stopped
-      # This maps directly to the ExecStop directive in systemd unit files
-      ExecStop = [
-        "${pkgs.iproute2}/bin/ip rule del fwmark 0x100 table 200 || true"
-        "${pkgs.iproute2}/bin/ip route del default dev tun0 table 200 || true"
-      ];
-    };
-  };
 }
-
