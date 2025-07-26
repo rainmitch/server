@@ -44,7 +44,7 @@
           # Allow traffic from external interface (ens18) to main0 bridge for the specific port
           # This is the rule that allows the DNAT'd traffic to reach the container
           iifname ens18 oifname main0 tcp dport 9001 ip daddr 172.18.0.2 ip saddr 192.168.0.10 accept;
-          iifname ens18 oifname tun0 udp dport 5120 ip saddr 192.145.124.3 accept;
+          iifname ens18 oifname tun0 udp dport 51820 ip saddr 192.145.124.3 accept;
 
           # Drop all other forwarded traffic by default (policy drop)
         }

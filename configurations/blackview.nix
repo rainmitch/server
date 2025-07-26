@@ -4,6 +4,8 @@
 
 { config, lib, pkgs, ... }:
 
+# Blackview config
+
 {
   nixpkgs.config.allowUnfree = true;
   imports = [ # Include the results of the hardware scan.
@@ -15,12 +17,13 @@
       ../modules/optional/network/blackview.nix
       
       # Docker services
-      #../modules/optional/docker/wireguard.nix
+      ../modules/optional/docker/wireguard.nix
       #../modules/optional/docker/sillytavern.nix
   ];
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader.timeout = 2;
   
   boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.supportedFilesystems = ["nfs"];

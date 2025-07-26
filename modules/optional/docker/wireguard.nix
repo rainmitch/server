@@ -24,6 +24,10 @@
       SYS_MODULE = true;
     };
   };
+
+  boot.kernelModules = [
+    "iptable_raw"
+  ];
 }
 
 
