@@ -4,9 +4,9 @@
 { config, lib, pkgs, modulesPath, ... }:
 
 {
-  imports =
-    [ (modulesPath + "/profiles/qemu-guest.nix")
-    ];
+  imports = [
+    (modulesPath + "/profiles/qemu-guest.nix")
+  ];
 
   boot.initrd.availableKernelModules = [ "ata_piix" "uhci_hcd" "virtio_pci" "virtio_scsi" "sd_mod" "sr_mod" ];
   boot.initrd.kernelModules = [ ];
@@ -14,25 +14,17 @@
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
-    { device = "/dev/disk/by-uuid/344e1a53-faac-4636-9bc2-dc01ed76cd4e";
-      fsType = "ext4";
-    };
+  {
+    device = "/dev/disk/by-label/NIXROOT";
+    fsType = "ext4";
+  };
 
   fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/28E4-FD58";
-      fsType = "vfat";
-      options = [ "fmask=0022" "dmask=0022" ];
-    };
-
-  fileSystems."/mnt/storage" =
-    { device = "/dev/disk/by-uuid/d585b373-eae5-41c2-9269-d7a36a217004";
-      fsType= "ext4";
-    };
-
-  fileSystems."/mnt/docker" =
-    { device = "/dev/disk/by-uuid/16540d33-e787-45c0-99c8-53c6865a1342";
-      fsType = "ext4";
-    };
+  {
+    device = "/dev/disk/by-label/NIXBOOT";
+    fsType = "vfat";
+    options = [ "fmask=0022" "dmask=0022" ];
+  };
 
   swapDevices = [ ];
 
