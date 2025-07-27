@@ -9,7 +9,9 @@
 {
   imports = [ # Include the results of the hardware scan.
       ./hardware/blackview.nix
-      
+      ../modules/optional/network/blackview.nix
+      ../modules/optional/firewall/blackview.nix      
+
       # Docker services
       ../modules/optional/docker/npm.nix
       ../modules/optional/docker/wireguard.nix

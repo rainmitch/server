@@ -24,17 +24,7 @@
   time.timeZone = "Europe/Madrid";
   services.qemuGuest.enable = true;
     
-  networking = {
-    defaultGateway = {
-      address = "192.168.0.1";
-      interface = "ens18";
-    };
-    nameservers = [ "1.1.1.1" ];
-    enableIPv6 = false;
-  };
-  
-
-    # This option defines the first version of NixOS you have installed on this particular machine,
+  # This option defines the first version of NixOS you have installed on this particular machine,
   # and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
   #
   # Most users should NEVER change this value after the initial install, for any reason,
