@@ -10,6 +10,7 @@
       # customize to your system
       system = "x86_64-linux";
       modules = [
+        ./configurations/common.nix
         ./configurations/blackview.nix
         sops-nix.nixosModules.sops
       ];
@@ -18,6 +19,7 @@
       # customize to your system
       system = "x86_64-linux";
       modules = [
+        ./configurations/common.nix
         ./configurations/storage.nix
         sops-nix.nixosModules.sops
       ];

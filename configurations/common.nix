@@ -16,15 +16,14 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.timeout = 2;
-  
+  boot.supportedFilesystems = ["nfs"];
+
 # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
   # Set time zone.
   time.timeZone = "Europe/Madrid";
   services.qemuGuest.enable = true;
-
-
-
+    
   networking = {
     defaultGateway = {
       address = "192.168.0.1";

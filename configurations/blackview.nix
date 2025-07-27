@@ -7,15 +7,8 @@
 # Blackview config
 
 {
-  nix.settings.experimental-features = ["nix-command" "flakes"];
-  nixpkgs.config.allowUnfree = true;
   imports = [ # Include the results of the hardware scan.
       ./hardware/blackview.nix
-      ../modules/core/user.nix
-      ../modules/core/ssh.nix
-      ../modules/core/docker.nix
-      ../modules/optional/firewall/blackview.nix
-      ../modules/optional/network/blackview.nix
       
       # Docker services
       ../modules/optional/docker/npm.nix
@@ -23,18 +16,7 @@
       ../modules/optional/docker/sillytavern.nix
   ];
 
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.timeout = 2;
-  
-  boot.kernelPackages = pkgs.linuxPackages_latest;
-  boot.supportedFilesystems = ["nfs"];
-  
-  # Set time zone.
-  time.timeZone = "Europe/Madrid";
-  
-
-    # This option defines the first version of NixOS you have installed on this particular machine,
+  # This option defines the first version of NixOS you have installed on this particular machine,
   # and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
   #
   # Most users should NEVER change this value after the initial install, for any reason,
