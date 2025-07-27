@@ -4,5 +4,3 @@ result-*
 
 # Ignore automatically generated direnv output
 .direnv
-#ignore config link
-configuration.nix
