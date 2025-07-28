@@ -6,7 +6,7 @@
     autoStart = true;
     pull = "always";
     environment = {
-      
+      GF_LOG_LEVEL = "debug";
     };
     user = "1001:1001";
     volumes = [
