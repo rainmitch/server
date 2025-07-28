@@ -6,6 +6,12 @@
 
 {
   nixpkgs.config.allowUnfree = true;
+  nix = {
+    #package = pkgs.nixUnstable; # Optional: Use the unstable Nix for the latest features
+    extraOptions = ''
+      experimental-features = nix-command flakes
+    '';
+  };
   imports = [ # Include the results of the hardware scan.
       ../modules/core/user.nix
       ../modules/core/ssh.nix

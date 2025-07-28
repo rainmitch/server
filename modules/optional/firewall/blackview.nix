@@ -23,6 +23,9 @@
 
           # Allow portainer for 192.168.0.10/32
           ip saddr 192.168.0.10/32 tcp dport 9001 accept
+          ip saddr 192.168.0.0/24 tcp dport 3000 accept
+          ip saddr 192.168.0.0/24 tcp dport 8080 accept
+
           # Allow nfs from for 192.168.0.90
           #ip saddr 192.168.0.90/32 tcp dport {111, 2049, 4000, 4001, 4002, 20048} counter log accept
           #ip saddr 192.168.0.90/32 udp dport {111, 2049, 4000, 4001, 4002, 20048} counter log accept
@@ -58,7 +61,8 @@
           iifname ens18 oifname main0 tcp dport 9001 ip daddr 172.18.0.2 ip saddr 192.168.0.10 accept;
           iifname ens18 oifname main0 tcp dport 81 ip daddr 172.18.0.4 ip saddr 192.168.0.90 accept;
           iifname ens18 oifname main0 tcp dport 8000 ip daddr 172.18.0.20 accept;
-
+          iifname ens18 oifname main0 tcp dport 3000 ip daddr 172.18.0.5 ip saddr 192.168.0.0/24 accept;
+          iifname ens18 oifname main0 tcp dport 8080 ip daddr 172.18.0.8 ip saddr 192.168.0.0/24 accept;
           # Allow Wireguard
           iifname ens18 oifname tun0 udp dport 51820 ip saddr 192.145.124.3 accept;
           # Allow web traffic into NPM
@@ -82,7 +86,8 @@
           iifname ens18 ip saddr 192.168.0.10 tcp dport 9001 dnat to 172.18.0.2:9001;
           iifname ens18 ip saddr 192.168.0.90 tcp dport 81 dnat to 172.18.0.4:81;
           iifname ens18 ip saddr 192.168.0.0/24 tcp dport 8000 dnat to 172.18.0.20:8000;
-          
+          iifname ens18 ip saddr 192.168.0.0/24 tcp dport 3000 dnat to 172.18.0.5:3000;
+          iifname ens18 ip saddr 192.168.0.0/24 tcp dport 8080 dnat to 172.18.0.8:8080;
           # Allow traffic from VPN into NPM
           iifname tun0 tcp dport {80, 443} dnat ip to 172.18.0.4;
         }
