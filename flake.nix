@@ -24,5 +24,12 @@
         sops-nix.nixosModules.sops
       ];
     };
+    nixosConfigurations.privacy = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        ./configurations/common.nix
+        ./configurations/privacy.nix
+      ];
+    };
   };
 }
