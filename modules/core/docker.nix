@@ -9,7 +9,7 @@
   
   virtualisation.docker.daemon.settings = {
     data-root = "/docker";
-    userland-proxy = false;
+    #userland-proxy = false;
     experimental = true;
     metrics-addr = "0.0.0.0:9323";
     ipv6 = false;

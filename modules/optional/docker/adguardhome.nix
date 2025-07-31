@@ -14,12 +14,10 @@
       "adguardConf:/opt/adguardhome/conf"
     ];
     ports = [
-      "53:53/tcp"
-      "53:53/tcp"
-      "8080:80/tcp"
-      "8443:443/tcp"
-      "853:853/tcp"
-      "853:853/udp"
+      #"3001:3000/tcp"
+      #"127.0.0.1:8080:80/tcp"
+      #"127.0.0.1:8443:443/tcp"
+      #"127.0.0.1:853:853/tcp"
     ];
     networks = ["main-network"];
     extraOptions = [

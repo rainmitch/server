@@ -16,7 +16,7 @@
       "sillytavernExtensions:/home/node/app/public/scripts/extensions/third-party"
     ];
     ports = [
-      "8000:8000/tcp"
+      #"127.0.0.1:8000:8000/tcp"
     ];
     networks = ["main-network"];
     extraOptions = [

@@ -14,9 +14,9 @@
       "/letsencrypt:/etc/letsencrypt"
     ];
     ports = [
-      "80:80"
-      "443:443"
-      "81:81"
+      "127.0.0.1:80:80"
+      "127.0.0.1:443:443"
+      "127.0.0.1:81:81"
     ];
     networks = ["main-network"];
     extraOptions = [

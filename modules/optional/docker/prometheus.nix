@@ -13,7 +13,7 @@
         
     ];
     ports = [
-      "9090/tcp"
+      "127.0.0.1:9090/tcp"
     ];
     networks = ["main-network"];
     extraOptions = [

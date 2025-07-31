@@ -13,7 +13,7 @@
       "grafana:/var/lib/grafana"
     ];
     ports = [
-      "3000:3000/tcp"
+      "127.0.0.1:3000:3000/tcp"
     ];
     networks = ["main-network"];
     extraOptions = [
