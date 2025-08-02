@@ -16,6 +16,7 @@
       ../modules/optional/docker/npm.nix
       ../modules/optional/docker/wireguard.nix
       ../modules/optional/docker/adguardhome.nix
+      ../modules/optional/docker/vaultwarden.nix
       ../modules/optional/docker/sillytavern.nix
       ../modules/optional/docker/grafana.nix
   ];

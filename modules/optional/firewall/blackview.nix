@@ -25,6 +25,9 @@
           ip saddr 192.168.0.10/32 tcp dport 9001 accept
           ip saddr 192.168.0.0/24 tcp dport 3000 accept
           ip saddr 192.168.0.0/24 tcp dport 8080 accept
+          ip saddr 192.168.0.0/24 tcp dport 3080 accept
+          ip saddr 192.168.0.0/24 tcp dport 3443 accept
+          ip saddr 192.168.0.0/24 tcp dport 53 accept
 
           # Allow nfs from for 192.168.0.90
           #ip saddr 192.168.0.90/32 tcp dport {111, 2049, 4000, 4001, 4002, 20048} counter log accept
@@ -46,25 +49,29 @@
 
           # Allow ALL traffic from main0 bridge to tun0 (VPN)
           # This now covers both marked (VPN) and unmarked (local) traffic that needs forwarding.
-          # Unmarked traffic will naturally route via the main routing table to ens18,
+          # Unmarked traffic will naturally route via the main routing table to enp1s0,
           # but it still needs to be allowed by the forward chain.
           # Since local access (e.g. 172.18.0.X to 192.168.0.Y) is still a "forwarded" packet,
           # this rule is key.
           iifname main0 oifname tun0 accept; # For VPN-bound traffic
-          iifname main0 oifname ens18 accept; # For local network bound traffic
+          iifname main0 oifname enp1s0 accept; # For local network bound traffic
           
           # Allow traffic from vpn to external interface
-          iifname tun0 oifname ens18 accept;
+          iifname tun0 oifname enp1s0 accept;
 
-          # Allow traffic from external interface (ens18) to main0 bridge for the specific port
+          # Allow traffic from external interface (enp1s0) to main0 bridge for the specific port
           # This is the rule that allows the DNAT'd traffic to reach the container
-          iifname ens18 oifname main0 tcp dport 9001 ip daddr 172.18.0.2 ip saddr 192.168.0.10 accept;
-          iifname ens18 oifname main0 tcp dport 81 ip daddr 172.18.0.4 ip saddr 192.168.0.90 accept;
-          iifname ens18 oifname main0 tcp dport 8000 ip daddr 172.18.0.20 accept;
-          iifname ens18 oifname main0 tcp dport 3000 ip daddr 172.18.0.5 ip saddr 192.168.0.0/24 accept;
-          iifname ens18 oifname main0 tcp dport 8080 ip daddr 172.18.0.8 ip saddr 192.168.0.0/24 accept;
+          iifname enp1s0 oifname main0 tcp dport 9001 ip daddr 172.18.0.2 ip saddr 192.168.0.10 accept;
+          iifname enp1s0 oifname main0 tcp dport 81 ip daddr 172.18.0.4 ip saddr 192.168.0.90 accept;
+          iifname enp1s0 oifname main0 tcp dport 8000 ip daddr 172.18.0.20 accept;
+          iifname enp1s0 oifname main0 tcp dport 3000 ip daddr 172.18.0.5 ip saddr 192.168.0.0/24 accept;
+          iifname enp1s0 oifname main0 tcp dport 8080 ip daddr 172.18.0.8 ip saddr 192.168.0.0/24 accept;
+          iifname enp1s0 oifname main0 tcp dport 80 ip daddr 172.18.0.8 ip saddr 192.168.0.0/24 accept;
+          iifname enp1s0 oifname main0 tcp dport 3443 ip daddr 172.18.0.8 ip saddr 192.168.0.0/24 accept;
+          # Allow AdGuardHome DNS
+          iifname enp1s0 oifname main0 tcp dport 53 ip daddr 172.18.0.8 ip saddr 192.168.0.0/24 accept;
           # Allow Wireguard
-          iifname ens18 oifname tun0 udp dport 51820 ip saddr 192.145.124.3 accept;
+          iifname enp1s0 oifname tun0 udp dport 51820 ip saddr 192.145.124.3 accept;
           # Allow web traffic into NPM
           iifname tun0 oifname main0 tcp dport {80, 443} ip daddr 172.18.0.4 accept;
           # Drop all other forwarded traffic by default (policy drop)
@@ -80,14 +87,17 @@
         chain prerouting {
           type nat hook prerouting priority 0;
           
-          # DNAT rule: Redirect incoming traffic on host's ens18:9001
+          # DNAT rule: Redirect incoming traffic on host's enp1s0:9001
           # from 192.168.0.10 to the container's static IP:port
           # This runs BEFORE the 'forward' filter chain.
-          iifname ens18 ip saddr 192.168.0.10 tcp dport 9001 dnat to 172.18.0.2:9001;
-          iifname ens18 ip saddr 192.168.0.90 tcp dport 81 dnat to 172.18.0.4:81;
-          iifname ens18 ip saddr 192.168.0.0/24 tcp dport 8000 dnat to 172.18.0.20:8000;
-          iifname ens18 ip saddr 192.168.0.0/24 tcp dport 3000 dnat to 172.18.0.5:3000;
-          iifname ens18 ip saddr 192.168.0.0/24 tcp dport 8080 dnat to 172.18.0.8:8080;
+          iifname enp1s0 ip saddr 192.168.0.10 tcp dport 9001 dnat to 172.18.0.2:9001;
+          iifname enp1s0 ip saddr 192.168.0.90 tcp dport 81 dnat to 172.18.0.4:81;
+          iifname enp1s0 ip saddr 192.168.0.0/24 tcp dport 8000 dnat to 172.18.0.20:8000;
+          iifname enp1s0 ip saddr 192.168.0.0/24 tcp dport 3000 dnat to 172.18.0.5:3000;
+          iifname enp1s0 ip saddr 192.168.0.0/24 tcp dport 8080 dnat to 172.18.0.8:8080;
+          iifname enp1s0 ip saddr 192.168.0.0/24 tcp dport 3080 dnat to 172.18.0.8:80;
+          iifname enp1s0 ip saddr 192.168.0.0/24 tcp dport 3443 dnat to 172.18.0.8:443;
+          iifname enp1s0 ip saddr 192.168.0.0/24 tcp dport 53 dnat to 172.18.0.8:53;
           # Allow traffic from VPN into NPM
           iifname tun0 tcp dport {80, 443} dnat ip to 172.18.0.4;
         }
@@ -96,9 +106,9 @@
           type nat hook postrouting priority 100;
 
           # SNAT/Masquerade rule: Change source IP of outbound traffic from Docker containers
-          # to the host's external IP (on ens18).
+          # to the host's external IP (on enp1s0).
           # This allows containers to access the internet.
-          oifname ens18 masquerade;
+          oifname enp1s0 masquerade;
           oifname tun0 meta mark 0x100 masquerade;
         }
       }
@@ -107,7 +117,7 @@
           type ipv4_addr;
           flags interval; # Allows specifying ranges like 192.168.0.0/24
           elements = {
-              192.168.0.0/24, # Your local network on ens18
+              192.168.0.0/24, # Your local network on enp1s0
               # Add other local networks if you have them, e.g.,
               # 10.0.0.0/8,
               # 172.16.0.0/12,

@@ -4,14 +4,14 @@
 {
   networking = {
     interfaces = {
-      ens18.ipv4.addresses = [{
+      enp1s0.ipv4.addresses = [{
         address = "192.168.0.9";
         prefixLength = 24;
       }];
     };
     defaultGateway = {
       address = "192.168.0.1";
-      interface = "ens18";
+      interface = "enp1s0";
     };
     nameservers = [ "1.1.1.1" ];
     hostName = "blackview";
