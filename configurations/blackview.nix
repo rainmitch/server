@@ -9,7 +9,10 @@
 {
   sops.defaultSopsFile = ../secrets/blackview.yaml;
   sops.age.keyFile = "/var/lib/sops-nix/key.txt";
-  sops.secrets."authentik/test" = {};
+  sops.secrets."authentik/pgPass" = {};
+  sops.secrets."authentik/pgUser" = {};
+  sops.secrets."authentik/pgDb" = {};
+  sops.secrets."authentik/authentikSecretKey" = {};
   imports = [ # Include the results of the hardware scan.
       ./hardware/blackview.nix
       ../modules/optional/network/blackview.nix
