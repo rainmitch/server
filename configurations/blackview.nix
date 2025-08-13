@@ -8,9 +8,10 @@
 
 {
   sops.defaultSopsFile = ../secrets/blackview.yaml;
-  sops.age.keyFile = "/var/lib/sops-nix/key.txt";
+  sops.age.keyFile = "/root/.config/sops/age/keys.txt";
   sops.secrets."authentik.env" = {
     sopsFile = ../secrets/authentik.env;
+    format = "dotenv";
   };
   imports = [ # Include the results of the hardware scan.
       ./hardware/blackview.nix
