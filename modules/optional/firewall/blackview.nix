@@ -20,7 +20,8 @@
           ip saddr 192.168.0.90/32 tcp dport 22 accept
           # Allow ssh from 192.168.0.91/32
           ip saddr 192.168.0.91/32 tcp dport 22 accept
-
+            
+          ip saddr 172.18.0.4 ip daddr 172.18.0.0/16 accept
           # Allow portainer for 192.168.0.10/32
           ip saddr 192.168.0.10/32 tcp dport 9001 accept
           ip saddr 192.168.0.0/24 tcp dport 3000 accept
@@ -28,6 +29,7 @@
           ip saddr 192.168.0.0/24 tcp dport 3080 accept
           ip saddr 192.168.0.0/24 tcp dport 3443 accept
           ip saddr 192.168.0.0/24 tcp dport 53 accept
+          ip saddr 192.168.0.0/24 tcp dport 7080 accept
 
           # Allow nfs from for 192.168.0.90
           #ip saddr 192.168.0.90/32 tcp dport {111, 2049, 4000, 4001, 4002, 20048} counter log accept
@@ -68,12 +70,14 @@
           iifname enp1s0 oifname main0 tcp dport 8080 ip daddr 172.18.0.8 ip saddr 192.168.0.0/24 accept;
           iifname enp1s0 oifname main0 tcp dport 80 ip daddr 172.18.0.8 ip saddr 192.168.0.0/24 accept;
           iifname enp1s0 oifname main0 tcp dport 3443 ip daddr 172.18.0.8 ip saddr 192.168.0.0/24 accept;
+          iifname enp1s0 oifname main0 tcp dport 80 ip daddr 172.18.0.9 ip saddr 192.168.0.0/24 accept;
           # Allow AdGuardHome DNS
           iifname enp1s0 oifname main0 tcp dport 53 ip daddr 172.18.0.8 ip saddr 192.168.0.0/24 accept;
           # Allow Wireguard
           iifname enp1s0 oifname tun0 udp dport 51820 ip saddr 192.145.124.3 accept;
           # Allow web traffic into NPM
           iifname tun0 oifname main0 tcp dport {80, 443} ip daddr 172.18.0.4 accept;
+          iifname enp1s0 oifname main0 tcp dport {80, 443} ip daddr 172.18.0.4 accept;
           # Drop all other forwarded traffic by default (policy drop)
         }
         
@@ -98,8 +102,10 @@
           iifname enp1s0 ip saddr 192.168.0.0/24 tcp dport 3080 dnat to 172.18.0.8:80;
           iifname enp1s0 ip saddr 192.168.0.0/24 tcp dport 3443 dnat to 172.18.0.8:443;
           iifname enp1s0 ip saddr 192.168.0.0/24 tcp dport 53 dnat to 172.18.0.8:53;
+          iifname enp1s0 ip saddr 192.168.0.0/24 tcp dport 7080 dnat to 172.18.0.9:80;
           # Allow traffic from VPN into NPM
           iifname tun0 tcp dport {80, 443} dnat ip to 172.18.0.4;
+          iifname enp1s0 tcp dport {80, 443} dnat ip to 172.18.0.4;
         }
 
         chain postrouting {

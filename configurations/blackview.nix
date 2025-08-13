@@ -7,6 +7,9 @@
 # Blackview config
 
 {
+  sops.defaultSopsFile = ../secrets/blackview.yaml;
+  sops.age.keyFile = "/var/lib/sops-nix/key.txt";
+  sops.secrets."authentik/test" = {};
   imports = [ # Include the results of the hardware scan.
       ./hardware/blackview.nix
       ../modules/optional/network/blackview.nix
@@ -20,7 +23,11 @@
       ../modules/optional/docker/sillytavern.nix
       ../modules/optional/docker/grafana.nix
   ];
-
+  
+  environment.systemPackages = [
+    pkgs.openssl
+  ];
+  
   # This option defines the first version of NixOS you have installed on this particular machine,
   # and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
   #

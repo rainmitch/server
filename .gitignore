@@ -4,3 +4,5 @@ result-*
 
 # Ignore automatically generated direnv output
 .direnv
+# Ignore .sops.yaml file
+.sops.yaml
