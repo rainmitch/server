@@ -9,10 +9,9 @@
 {
   sops.defaultSopsFile = ../secrets/blackview.yaml;
   sops.age.keyFile = "/var/lib/sops-nix/key.txt";
-  sops.secrets."authentik/pgPass" = {};
-  sops.secrets."authentik/pgUser" = {};
-  sops.secrets."authentik/pgDb" = {};
-  sops.secrets."authentik/authentikSecretKey" = {};
+  sops.secrets."authentik.env" = {
+    sopsFile = ../secrets/authentik.env;
+  };
   imports = [ # Include the results of the hardware scan.
       ./hardware/blackview.nix
       ../modules/optional/network/blackview.nix
@@ -20,6 +19,7 @@
 
       # Docker services
       ../modules/optional/docker/npm.nix
+      ../modules/optional/docker/authentik.nix
       ../modules/optional/docker/wireguard.nix
       ../modules/optional/docker/adguardhome.nix
       ../modules/optional/docker/vaultwarden.nix
