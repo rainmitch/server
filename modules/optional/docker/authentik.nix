@@ -26,17 +26,17 @@ in
   # --- Define individual OCI containers ---
   virtualisation.oci-containers.containers = {
     # --- PostgreSQL Service ---
-    postgresql = {
+    "authentik-postgresql" = {
       image = "docker.io/library/postgres:16-alpine";
       autoStart = true; # Equivalent to restart: unless-stopped for initial start
       # Docker-specific restart policy and health checks are passed via extraOptions
       extraOptions = [
-        "--restart=unless-stopped"
         #"--health-cmd=pg_isready -d ${pgDb} -U ${pgUser}"
         #"--health-start-period=20s"
         #"--health-interval=30s"
         #"--health-retries=5"
         #"--health-timeout=5s"
+        "--ip=172.18.0.12"
       ];
       # Volume mapping: hostPath:containerPath
       volumes = [
@@ -45,38 +45,40 @@ in
       environmentFiles = [
         config.sops.secrets."authentik.env".path
       ];
+      networks = ["main-network"];
     };
 
     # --- Redis Service ---
-    redis = {
+    "authentik-redis" = {
       image = "docker.io/library/redis:alpine";
       autoStart = true;
       extraOptions = [
-        "--restart=unless-stopped"
         "--health-cmd=redis-cli ping | grep PONG"
         "--health-start-period=20s"
         "--health-interval=30s"
         "--health-retries=5"
         "--health-timeout=3s"
+        "--ip=172.18.0.13"
       ];
       volumes = [
         "authentik-redis:/data"
       ];
+      networks = ["main-network"];
       # Command to run inside the Redis container
       cmd = [ "--save" "60" "1" "--loglevel" "warning" ];
     };
 
     # --- Authentik Server Service ---
-    server = {
+    "authentik-server" = {
       image = "${authentikImage}:${authentikTag}";
       autoStart = true;
       extraOptions = [
-        "--restart=unless-stopped"
+        "--ip=172.18.0.10"
       ];
       cmd = [ "server" ]; # Command to run for the server
       environment = {
-        AUTHENTIK_REDIS__HOST = "redis"; # Refers to the internal container name for Redis
-        AUTHENTIK_POSTGRESQL__HOST = "postgresql"; # Refers to the internal container name for PostgreSQL
+        AUTHENTIK_REDIS__HOST = "172.18.0.13"; # Refers to the internal container name for Redis
+        AUTHENTIK_POSTGRESQL__HOST = "172.18.0.12"; # Refers to the internal container name for PostgreSQL
       };
       environmentFiles = [
         config.sops.secrets."authentik.env".path
@@ -85,6 +87,7 @@ in
         "authentik-server-media:/media"
         "authentik-server-templates:/templates"
       ];
+      networks = ["main-network"];
       
       # `depends_on` is implicitly handled by oci-containers.
       # Containers will attempt to start, and if a dependency (like a healthy DB)
@@ -92,16 +95,16 @@ in
     };
 
     # --- Authentik Worker Service ---
-    worker = {
+    "authentik-worker" = {
       image = "${authentikImage}:${authentikTag}";
       autoStart = true;
       extraOptions = [
-        "--restart=unless-stopped"
+        "--ip=172.18.0.11"
       ];
       cmd = [ "worker" ]; # Command to run for the worker
       environment = {
-        AUTHENTIK_REDIS__HOST = "redis";
-        AUTHENTIK_POSTGRESQL__HOST = "postgresql";
+        AUTHENTIK_REDIS__HOST = "172.18.0.13";
+        AUTHENTIK_POSTGRESQL__HOST = "172.18.0.12";
       };
       environmentFiles = [
         config.sops.secrets."authentik.env".path
@@ -114,6 +117,7 @@ in
         "authentik-worker-certs:/certs"
         "authentik-worker-templates:/templates"
       ];
+      networks = ["main-network"];
       # `depends_on` is implicitly handled as for the 'server' service.
     };
   };
