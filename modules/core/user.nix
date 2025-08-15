@@ -21,6 +21,7 @@
     ohMyZsh = {
       enable = true;
       theme = "agnoster";
+      plugins = [ "git" "dirhistory" "history" ];
     };
   };
   users.defaultUserShell = pkgs.zsh;
