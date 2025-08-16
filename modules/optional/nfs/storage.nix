@@ -15,6 +15,7 @@
     exports = ''
       /export          192.168.0.90(rw,fsid=0,all_squash,anonuid=1000) 192.168.0.9(rw,fsid=0,all_squash,anonuid=1000,insecure)
       /export/storage  192.168.0.90(rw,nohide) 192.168.0.9(rw,nohide)
+      /export/storage/torrents 192.168.0.90(rw,nohide) 192.168.0.22(rw,nohide)
     '';
   };
 }
