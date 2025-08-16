@@ -30,6 +30,7 @@
           ip saddr 192.168.0.90/32 tcp dport {111, 2049, 4000, 4001, 4002, 20048} counter log accept
           ip saddr 192.168.0.90/32 udp dport {111, 2049, 4000, 4001, 4002, 20048} counter log accept
 	  ip saddr 192.168.0.9/32 tcp dport {111, 2049, 4000, 4001, 4002, 20048} counter log accept
+          ip saddr 192.168.0.22/32 tcp dport {111, 2049, 4000, 4001, 4002, 20048} counter log accept
         }
 
         chain forward {
