@@ -31,5 +31,12 @@
         ./configurations/privacy.nix
       ];
     };
+    nixosConfigurations.services = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        ./configurations/common.nix
+        ./configurations/services.nix
+      ];
+    };
   };
 }
