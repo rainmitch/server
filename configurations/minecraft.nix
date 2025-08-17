@@ -3,6 +3,7 @@
 
 {
   imports = [
+    ./common.nix
     ./hardware/vm.nix
     ../modules/optional/network/minecraft.nix 
     ../modules/optional/firewall/minecraft.nix

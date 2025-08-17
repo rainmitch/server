@@ -1,4 +1,3 @@
-c
 
 {
   inputs.sops-nix.url = "github:Mic92/sops-nix";
@@ -42,7 +41,7 @@ c
       system = "x86_64-linux";
       modules = [
         ./configurations/common.nix
-        ./configurations/services.nix
+        ./configurations/minecraft.nix
       ];
     };
   };
