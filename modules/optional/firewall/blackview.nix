@@ -16,6 +16,8 @@
           
           # Allow loopback traffic
           iifname lo accept
+          # Allow WireGuard traffic on tun0
+          iifname tun0 udp dport 51820 accept
           # Allow ssh from 192.168.0.90/32
           ip saddr 192.168.0.90/32 tcp dport 22 accept
           # Allow ssh from 192.168.0.91/32
@@ -35,7 +37,6 @@
           ip saddr 192.168.0.0/24 tcp dport 53 accept
           ip saddr 192.168.0.0/24 tcp dport 7080 accept
           ip saddr 192.168.0.0/24 tcp dport 9000 accept
-
 
           # Allow nfs from for 192.168.0.90
           #ip saddr 192.168.0.90/32 tcp dport {111, 2049, 4000, 4001, 4002, 20048} counter log accept
@@ -63,9 +64,10 @@
           # this rule is key.
           iifname main0 oifname tun0 accept; # For VPN-bound traffic
           iifname main0 oifname enp1s0 accept; # For local network bound traffic
+          iifname wg0 oifname tun0 accept;
           
           # Allow traffic from vpn to external interface
-          iifname tun0 oifname enp1s0 accept;
+          #iifname tun0 oifname enp1s0 accept;
 
           # Allow traffic from external interface (enp1s0) to main0 bridge for the specific port
           # This is the rule that allows the DNAT'd traffic to reach the container
@@ -123,6 +125,7 @@
           # to the host's external IP (on enp1s0).
           # This allows containers to access the internet.
           oifname enp1s0 masquerade;
+          oifname wg0 masquerade;
           oifname tun0 meta mark 0x100 masquerade;
         }
       }

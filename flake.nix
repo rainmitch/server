@@ -1,4 +1,4 @@
-
+c
 
 {
   inputs.sops-nix.url = "github:Mic92/sops-nix";
@@ -32,6 +32,13 @@
       ];
     };
     nixosConfigurations.services = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        ./configurations/common.nix
+        ./configurations/services.nix
+      ];
+    };
+    nixosConfigurations.minecraft = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [
         ./configurations/common.nix
