@@ -1,5 +1,5 @@
 
-{config, ...}:
+{config, pkgs, ...}:
 
 {
   imports = [
@@ -7,6 +7,15 @@
     ./hardware/vm.nix
     ../modules/optional/network/minecraft.nix 
     ../modules/optional/firewall/minecraft.nix
+    ../modules/optional/ftp/minecraft.nix
+    
+    ../modules/optional/docker/minecraft.nix
+  ];
+  
+  
+  
+  environment.systemPackages = [
+    pkgs.unzip
   ];
   
   # This option defines the first version of NixOS you have installed on this particular machine,

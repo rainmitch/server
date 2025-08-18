@@ -24,11 +24,12 @@
   boot.loader.timeout = 2;
   boot.supportedFilesystems = ["nfs"];
 
-# Use latest kernel.
+  # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
   # Set time zone.
   time.timeZone = "Europe/Madrid";
   services.qemuGuest.enable = true;
+  services.timesyncd.enable = true;
     
   # This option defines the first version of NixOS you have installed on this particular machine,
   # and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
