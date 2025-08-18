@@ -24,6 +24,7 @@
           # Allow portainer for 192.168.0.10/32
           ip saddr 192.168.0.10/32 tcp dport 9001 accept
           # Allow nfs from for 192.168.0.90
+          ip saddr 192.168.0.9/32 tcp dport 8096 accept
         }
 
         chain forward {
@@ -39,6 +40,7 @@
           # Allow traffic from external interface (ens18) to main0 bridge for the specific port
           # This is the rule that allows the DNAT'd traffic to reach the container
           iifname ens18 oifname main0 tcp dport 9001 ip daddr 172.18.0.2 ip saddr 192.168.0.10 accept;
+          iifname ens18 oifname main0 tcp dport 8096 ip daddr 172.18.0.22 ip saddr 192.168.0.9 accept;
 
           # Drop all other forwarded traffic by default (policy drop)
         }
@@ -57,6 +59,7 @@
           # from 192.168.0.10 to the container's static IP:port
           # This runs BEFORE the 'forward' filter chain.
           iifname ens18 ip saddr 192.168.0.10 tcp dport 9001 dnat to 172.18.0.2:9001;
+          iifname ens18 ip saddr 192.168.0.9 tcp dport 8096 dnat to 172.18.0.2:8096;
         }
 
         chain postrouting {

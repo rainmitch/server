@@ -6,7 +6,15 @@
     ./hardware/vm.nix
     ../modules/optional/network/services.nix 
     ../modules/optional/firewall/services.nix
+    
+    ../modules/optional/docker/jellyfin.nix
   ];
+  
+  fileSystems."/mnt/storage" = {
+    device = "192.168.0.21:/";
+    fsType = "nfs";
+    options = ["nfsvers=4.2"];
+  };
   
   # This option defines the first version of NixOS you have installed on this particular machine,
   # and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
