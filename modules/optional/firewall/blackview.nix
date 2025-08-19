@@ -43,6 +43,7 @@
           #ip saddr 192.168.0.90/32 udp dport {111, 2049, 4000, 4001, 4002, 20048} counter log accept
           ip saddr 192.168.0.0/24 tcp dport 8000 accept
           ip saddr 192.168.0.90/32 tcp dport 81 accept
+          ip saddr 192.168.0.91/32 tcp dport 81 accept
         }
 
         chain forward {
@@ -73,6 +74,7 @@
           # This is the rule that allows the DNAT'd traffic to reach the container
           iifname enp1s0 oifname main0 tcp dport 9001 ip daddr 172.18.0.2 ip saddr 192.168.0.10 accept;
           iifname enp1s0 oifname main0 tcp dport 81 ip daddr 172.18.0.4 ip saddr 192.168.0.90 accept;
+          iifname enp1s0 oifname main0 tcp dport 81 ip daddr 172.18.0.4 ip saddr 192.168.0.91 accept;
           iifname enp1s0 oifname main0 tcp dport 8000 ip daddr 172.18.0.20 accept;
           iifname enp1s0 oifname main0 tcp dport 3000 ip daddr 172.18.0.5 ip saddr 192.168.0.0/24 accept;
           iifname enp1s0 oifname main0 tcp dport 8080 ip daddr 172.18.0.8 ip saddr 192.168.0.0/24 accept;
@@ -85,7 +87,7 @@
           # Allow Wireguard
           iifname enp1s0 oifname tun0 udp dport 51820 ip saddr 192.145.124.3 accept;
           # Allow web traffic into NPM
-          iifname tun0 oifname main0 tcp dport {80, 443} ip daddr 172.18.0.4 accept;
+          iifname tun0 oifname main0 tcp dport {80, 443, 25565} ip daddr 172.18.0.4 accept;
           iifname enp1s0 oifname main0 tcp dport {80, 443} ip daddr 172.18.0.4 accept;
           # Drop all other forwarded traffic by default (policy drop)
         }
@@ -105,6 +107,7 @@
           # This runs BEFORE the 'forward' filter chain.
           iifname enp1s0 ip saddr 192.168.0.10 tcp dport 9001 dnat to 172.18.0.2:9001;
           iifname enp1s0 ip saddr 192.168.0.90 tcp dport 81 dnat to 172.18.0.4:81;
+          iifname enp1s0 ip saddr 192.168.0.91 tcp dport 81 dnat to 172.18.0.4:81;
           iifname enp1s0 ip saddr 192.168.0.0/24 tcp dport 8000 dnat to 172.18.0.20:8000;
           iifname enp1s0 ip saddr 192.168.0.0/24 tcp dport 3000 dnat to 172.18.0.5:3000;
           iifname enp1s0 ip saddr 192.168.0.0/24 tcp dport 8080 dnat to 172.18.0.8:8080;
@@ -114,7 +117,7 @@
           iifname enp1s0 ip saddr 192.168.0.0/24 tcp dport 7080 dnat to 172.18.0.9:80;
           iifname enp1s0 ip saddr 192.168.0.0/24 tcp dport 9000 dnat to 172.18.0.10:9000;
           # Allow traffic from VPN into NPM
-          iifname tun0 tcp dport {80, 443} dnat ip to 172.18.0.4;
+          iifname tun0 tcp dport {80, 443, 25565} dnat ip to 172.18.0.4;
           iifname enp1s0 tcp dport {80, 443} dnat ip to 172.18.0.4;
         }
 
