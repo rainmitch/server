@@ -4,9 +4,9 @@
 {
   imports = [
     ./hardware/vm.nix
-    ../modules/optional/nfs/storage.nix    
-    ../modules/optional/network/storage.nix 
-    ../modules/optional/firewall/storage.nix
+    ../modules/optional/nfs/services.nix
+    ../modules/optional/network/services.nix 
+    ../modules/optional/firewall/services.nix
   ];
   
   fileSystems."/mnt/storage" =

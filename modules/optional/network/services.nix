@@ -14,7 +14,7 @@
       interface = "ens18";
     };
     nameservers = [ "1.1.1.1" ];
-    hostName = "storage";
+    hostName = "services";
     enableIPv6 = false;
   };
 }

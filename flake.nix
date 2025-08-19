@@ -14,12 +14,12 @@
         sops-nix.nixosModules.sops
       ];
     };
-    nixosConfigurations.storage = nixpkgs.lib.nixosSystem {
+    nixosConfigurations.services = nixpkgs.lib.nixosSystem {
       # customize to your system
       system = "x86_64-linux";
       modules = [
         ./configurations/common.nix
-        ./configurations/storage.nix
+        ./configurations/services.nix
         sops-nix.nixosModules.sops
       ];
     };
