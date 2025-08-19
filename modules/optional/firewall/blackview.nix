@@ -13,6 +13,8 @@
           policy drop;
 	  # Allow established and related connections (crucial for normal internet use!)
           ct state { established, related } accept
+          # allow pings
+          ip protocol icmp icmp type echo-request accept
           
           # Allow loopback traffic
           iifname lo accept
@@ -44,6 +46,8 @@
           ip saddr 192.168.0.0/24 tcp dport 8000 accept
           ip saddr 192.168.0.90/32 tcp dport 81 accept
           ip saddr 192.168.0.91/32 tcp dport 81 accept
+          
+          iifname enp1s0 ip saddr 192.168.0.0/24 tcp dport {80, 443} accept
         }
 
         chain forward {
@@ -66,6 +70,7 @@
           iifname main0 oifname tun0 accept; # For VPN-bound traffic
           iifname main0 oifname enp1s0 accept; # For local network bound traffic
           iifname wg0 oifname tun0 accept;
+          iifname wg0 oifname enp1s0 ip daddr 192.168.0.0/24 accept
           
           # Allow traffic from vpn to external interface
           #iifname tun0 oifname enp1s0 accept;
@@ -85,7 +90,7 @@
           # Allow AdGuardHome DNS
           iifname enp1s0 oifname main0 tcp dport 53 ip daddr 172.18.0.8 ip saddr 192.168.0.0/24 accept;
           # Allow Wireguard
-          iifname enp1s0 oifname tun0 udp dport 51820 ip saddr 192.145.124.3 accept;
+          #iifname enp1s0 oifname tun0 udp dport 51820 ip saddr 192.145.124.3 accept;
           # Allow web traffic into NPM
           iifname tun0 oifname main0 tcp dport {80, 443, 25565} ip daddr 172.18.0.4 accept;
           iifname enp1s0 oifname main0 tcp dport {80, 443} ip daddr 172.18.0.4 accept;
