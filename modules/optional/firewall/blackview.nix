@@ -15,7 +15,8 @@
           ct state { established, related } accept
           # allow pings
           ip protocol icmp icmp type echo-request accept
-          
+          ip protocol icmp icmp type echo-reply accept
+
           # Allow loopback traffic
           iifname lo accept
           # Allow WireGuard traffic on tun0
@@ -24,6 +25,7 @@
           ip saddr 192.168.0.90/32 tcp dport 22 accept
           # Allow ssh from 192.168.0.91/32
           ip saddr 192.168.0.91/32 tcp dport 22 accept
+          ip saddr 10.0.0.0/24 tcp dport 22 accept
           # Allow NPM to communicate with any container
           ip saddr 172.18.0.4 ip daddr 172.18.0.0/16 accept
           # Allow Authentik to communicate with any container
@@ -37,6 +39,9 @@
           ip saddr 192.168.0.0/24 tcp dport 3080 accept
           ip saddr 192.168.0.0/24 tcp dport 3443 accept
           ip saddr 192.168.0.0/24 tcp dport 53 accept
+          ip saddr 192.168.0.0/24 udp dport 53 accept
+          iifname wg0 ip saddr 10.0.0.0/24 tcp dport 53 accept
+          iifname wg0 ip saddr 10.0.0.0/24 udp dport 53 accept
           ip saddr 192.168.0.0/24 tcp dport 7080 accept
           ip saddr 192.168.0.0/24 tcp dport 9000 accept
 
@@ -48,6 +53,7 @@
           ip saddr 192.168.0.91/32 tcp dport 81 accept
           
           iifname enp1s0 ip saddr 192.168.0.0/24 tcp dport {80, 443} accept
+          iifname wg0 ip saddr 10.0.0.0/24 tcp dport {80,443} accept
         }
 
         chain forward {
@@ -69,11 +75,16 @@
           # this rule is key.
           iifname main0 oifname tun0 accept; # For VPN-bound traffic
           iifname main0 oifname enp1s0 accept; # For local network bound traffic
+          iifname main0 oifname wg0 accept; # For direct VPN communication
+          
+          iifname wg0 oifname enp1s0 accept;
+          iifname wg0 oifname main0 accept;
           iifname wg0 oifname tun0 accept;
-          iifname wg0 oifname enp1s0 ip daddr 192.168.0.0/24 accept
           
           # Allow traffic from vpn to external interface
           #iifname tun0 oifname enp1s0 accept;
+
+          iifname wg0 oifname enp1s0 tcp dport 22 ip daddr 192.168.0.90 ip saddr 10.0.0.0/24 accept;
 
           # Allow traffic from external interface (enp1s0) to main0 bridge for the specific port
           # This is the rule that allows the DNAT'd traffic to reach the container
@@ -89,11 +100,15 @@
           iifname enp1s0 oifname main0 tcp dport 9000 ip daddr 172.18.0.10 ip saddr 192.168.0.0/24 accept;
           # Allow AdGuardHome DNS
           iifname enp1s0 oifname main0 tcp dport 53 ip daddr 172.18.0.8 ip saddr 192.168.0.0/24 accept;
+          iifname enp1s0 oifname main0 udp dport 53 ip daddr 172.18.0.8 ip saddr 192.168.0.0/24 accept;
+          iifname wg0 oifname main0 tcp dport 53 ip daddr 172.18.0.8 ip saddr 10.0.0.0/24 accept;
+          iifname wg0 oifname main0 udp dport 53 ip daddr 172.18.0.8 ip saddr 10.0.0.0/24 accept;
           # Allow Wireguard
           #iifname enp1s0 oifname tun0 udp dport 51820 ip saddr 192.145.124.3 accept;
           # Allow web traffic into NPM
           iifname tun0 oifname main0 tcp dport {80, 443, 25565} ip daddr 172.18.0.4 accept;
           iifname enp1s0 oifname main0 tcp dport {80, 443} ip daddr 172.18.0.4 accept;
+          iifname wg0 oifname main0 tcp dport {80, 443} ip daddr 172.18.0.4 accept;
           # Drop all other forwarded traffic by default (policy drop)
         }
         
@@ -107,6 +122,7 @@
         chain prerouting {
           type nat hook prerouting priority 0;
           
+          
           # DNAT rule: Redirect incoming traffic on host's enp1s0:9001
           # from 192.168.0.10 to the container's static IP:port
           # This runs BEFORE the 'forward' filter chain.
@@ -119,11 +135,15 @@
           iifname enp1s0 ip saddr 192.168.0.0/24 tcp dport 3080 dnat to 172.18.0.8:80;
           iifname enp1s0 ip saddr 192.168.0.0/24 tcp dport 3443 dnat to 172.18.0.8:443;
           iifname enp1s0 ip saddr 192.168.0.0/24 tcp dport 53 dnat to 172.18.0.8:53;
+          iifname enp1s0 ip saddr 192.168.0.0/24 udp dport 53 dnat to 172.18.0.8:53;
+          iifname wg0 ip saddr 10.0.0.0/24 tcp dport 53 dnat to 172.18.0.8:53;
+          iifname wg0 ip saddr 10.0.0.0/24 udp dport 53 dnat to 172.18.0.8:53;
           iifname enp1s0 ip saddr 192.168.0.0/24 tcp dport 7080 dnat to 172.18.0.9:80;
           iifname enp1s0 ip saddr 192.168.0.0/24 tcp dport 9000 dnat to 172.18.0.10:9000;
           # Allow traffic from VPN into NPM
-          iifname tun0 tcp dport {80, 443, 25565} dnat ip to 172.18.0.4;
+          iifname tun0 ip daddr 192.145.124.7 tcp dport {80, 443, 25565} dnat to 172.18.0.4;
           iifname enp1s0 tcp dport {80, 443} dnat ip to 172.18.0.4;
+          iifname wg0 ip daddr 192.168.0.9 tcp dport {80, 443} dnat ip to 172.18.0.4
         }
 
         chain postrouting {
@@ -143,6 +163,7 @@
           flags interval; # Allows specifying ranges like 192.168.0.0/24
           elements = {
               192.168.0.0/24, # Your local network on enp1s0
+              10.0.0.0/24,
               # Add other local networks if you have them, e.g.,
               # 10.0.0.0/8,
               # 172.16.0.0/12,
@@ -155,12 +176,14 @@
           # Rule 1: Do NOT mark traffic from main0 if its destination is a local network.
           # This rule needs to be evaluated BEFORE the general marking rule.
           iifname main0 ip daddr @local_networks accept; # Policy accept means it falls through this chain without being dropped.
+          iifname wg0 ip daddr @local_networks accept;
 
           # Rule 2: Mark ALL other traffic from main0 (172.18.0.0/24)
           # that is NOT destined for a local network.
           iifname main0 ip saddr 172.18.0.0/24 meta mark set 0x100 counter;
           # Mark traffic from the specific Docker container IP
           #iifname main0 ip saddr 172.18.0.4 meta mark set 0x100 counter;
+          iifname wg0 ip saddr 10.0.0.0/24 meta mark set 0x100 counter;
         }
       }
     '';
