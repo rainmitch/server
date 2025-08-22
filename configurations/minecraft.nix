@@ -1,26 +1,23 @@
 
-{config, ...}:
+{config, pkgs, ...}:
 
 {
   imports = [
+    ./common.nix
     ./hardware/vm.nix
-    ../modules/optional/nfs/storage.nix    
-    ../modules/optional/network/storage.nix 
-    ../modules/optional/firewall/storage.nix
+    ../modules/optional/network/minecraft.nix 
+    ../modules/optional/firewall/minecraft.nix
+    ../modules/optional/ftp/minecraft.nix
+    
+    ../modules/optional/docker/minecraft.nix
   ];
   
-  fileSystems."/mnt/storage" =
-  {
-    device = "/dev/disk/by-uuid/d585b373-eae5-41c2-9269-d7a36a217004";
-    fsType= "ext4";
-  };
-
-  fileSystems."/mnt/docker" =
-  {
-    device = "/dev/disk/by-uuid/16540d33-e787-45c0-99c8-53c6865a1342";
-    fsType = "ext4";
-  };
-
+  
+  
+  environment.systemPackages = [
+    pkgs.unzip
+  ];
+  
   # This option defines the first version of NixOS you have installed on this particular machine,
   # and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
   #

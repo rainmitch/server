@@ -2,6 +2,9 @@
 {config, pkgs, ...}:
 
 {
+  boot.kernel.sysctl = {
+    "net.ipv4.ip_forward" = 1;
+  };
   # Disable the NixOS firewall in favor of nftables
   networking.firewall.enable = false;
   networking.nftables = {
@@ -24,6 +27,11 @@
           # Allow portainer for 192.168.0.10/32
           ip saddr 192.168.0.10/32 tcp dport 9001 accept
           # Allow nfs from for 192.168.0.90
+          ip saddr 192.168.0.90/32 tcp dport {111, 2049, 4000, 4001, 4002, 20048} counter log accept
+          ip saddr 192.168.0.90/32 udp dport {111, 2049, 4000, 4001, 4002, 20048} counter log accept
+	  ip saddr 192.168.0.9/32 tcp dport {111, 2049, 4000, 4001, 4002, 20048} counter log accept
+          ip saddr 192.168.0.22/32 tcp dport {111, 2049, 4000, 4001, 4002, 20048} counter log accept
+          ip saddr 192.168.0.23/32 tcp dport {111, 2049, 4000, 4001, 4002, 20048} counter log accept
         }
 
         chain forward {

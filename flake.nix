@@ -1,5 +1,4 @@
 
-
 {
   inputs.sops-nix.url = "github:Mic92/sops-nix";
   inputs.sops-nix.inputs.nixpkgs.follows = "nixpkgs";
@@ -15,12 +14,12 @@
         sops-nix.nixosModules.sops
       ];
     };
-    nixosConfigurations.storage = nixpkgs.lib.nixosSystem {
+    nixosConfigurations.services = nixpkgs.lib.nixosSystem {
       # customize to your system
       system = "x86_64-linux";
       modules = [
         ./configurations/common.nix
-        ./configurations/storage.nix
+        ./configurations/services.nix
         sops-nix.nixosModules.sops
       ];
     };
@@ -31,11 +30,11 @@
         ./configurations/privacy.nix
       ];
     };
-    nixosConfigurations.services = nixpkgs.lib.nixosSystem {
+    nixosConfigurations.minecraft = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [
         ./configurations/common.nix
-        ./configurations/services.nix
+        ./configurations/minecraft.nix
       ];
     };
   };

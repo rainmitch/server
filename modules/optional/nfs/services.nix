@@ -14,7 +14,7 @@
     extraNfsdConfig = '''';
     exports = ''
       /export          192.168.0.90(rw,fsid=0,all_squash,anonuid=1000) 192.168.0.9(rw,fsid=0,all_squash,anonuid=1000,insecure)
-      /export/storage  192.168.0.90(rw,nohide) 192.168.0.9(rw,nohide) 192.168.0.22(rw,fsid=0,all_squash,anonuid=1000,nohide)
+      /export/storage  192.168.0.90(rw,nohide) 192.168.0.9(rw,nohide) 192.168.0.22(rw,fsid=0,all_squash,anonuid=1000,nohide) 192.168.0.23(rw,fsid=0,all_squash,anonuid=1000,nohide,anonuid=1000)
     '';
   };
 }
