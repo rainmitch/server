@@ -141,9 +141,10 @@
           iifname enp1s0 ip saddr 192.168.0.0/24 tcp dport 7080 dnat to 172.18.0.9:80;
           iifname enp1s0 ip saddr 192.168.0.0/24 tcp dport 9000 dnat to 172.18.0.10:9000;
           # Allow traffic from VPN into NPM
-          iifname tun0 ip daddr 192.145.124.7 tcp dport {80, 443, 25565} dnat to 172.18.0.4;
-          iifname enp1s0 tcp dport {80, 443} dnat ip to 172.18.0.4;
-          iifname wg0 ip daddr 192.168.0.9 tcp dport {80, 443} dnat ip to 172.18.0.4
+          iifname tun0 ip daddr 192.145.124.7 tcp dport {80, 443} dnat ip to 172.18.0.4;
+          iifname enp1s0 ip daddr 192.168.0.9 tcp dport {80, 443} dnat ip to 172.18.0.4;
+          iifname wg0 ip daddr 192.168.0.9 tcp dport {80, 443} dnat ip to 172.18.0.4;
+          iifname wg0 ip daddr 192.145.124.7 tcp dport {80, 443} dnat ip to 172.18.0.4;
         }
 
         chain postrouting {
