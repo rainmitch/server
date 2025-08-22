@@ -16,6 +16,7 @@
       ../modules/core/user.nix
       ../modules/core/ssh.nix
       ../modules/core/docker.nix
+      ../modules/core/docker/portainer.nix
     ];
 
   # Use the systemd-boot EFI boot loader.

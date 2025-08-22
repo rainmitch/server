@@ -15,6 +15,10 @@
     };
     nameservers = [ "1.1.1.1" ];
     hostName = "privacy";
-    enableIPv6 = false;
+    enableIPv6 = true;
+  };
+  boot.kernel.sysctl = {
+    "net.ipv4.ip_forward" = 1;
+    "net.ipv4.conf.all.src_valid_mark" = 1;
   };
 }
