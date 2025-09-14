@@ -14,7 +14,7 @@
     };
     volumes = [
       "qbittorrent:/config"
-      ""
+      "/tmp/incomplete:/incomplete"
     ];
     networks = ["main-network"];
     extraOptions = [

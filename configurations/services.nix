@@ -1,12 +1,16 @@
 
-{config, ...}:
+{config, pkgs, ...}:
 
 {
   imports = [
     ./hardware/vm.nix
+    ./hardware/services.nix
     ../modules/optional/nfs/services.nix
     ../modules/optional/network/services.nix 
     ../modules/optional/firewall/services.nix
+    
+    ../modules/optional/docker/jellyfin.nix
+    ../modules/optional/docker/kavita.nix
   ];
   
   fileSystems."/mnt/storage" =
@@ -19,6 +23,14 @@
   {
     device = "/dev/disk/by-uuid/16540d33-e787-45c0-99c8-53c6865a1342";
     fsType = "ext4";
+  };
+
+  users.users.storage = {
+    isNormalUser = true;
+    description = "Storage";
+    extraGroups = [ "render" ]; # for sudo access
+    shell = pkgs.zsh;
+    home = "/home/storage";
   };
 
   # This option defines the first version of NixOS you have installed on this particular machine,

@@ -6,16 +6,21 @@
     autoStart = true;
     pull = "always";
     environment = {
-      PUID = "1000";
-      PGID = "1000";
+      PUID = "1001";
+      PGID = "1001";
       TZ = "Europe/Madrid";
       JELLYFIN_PublishedServerUrl = "https://jellyfin.networkrain.net";
     };
     volumes = [
       "jellyfin:/config"
-      "/mnt/storage/media/shows:/data/shows"
-      "/mnt/storage/media/movies:/data/movies"
-      "/mnt/storage/media/anime:/data/anime"
+      "/export/storage/media/shows:/data/shows"
+      "/export/storage/media/movies:/data/movies"
+      "/export/storage/media/anime:/data/anime"
+    ];
+    devices = [
+      "/dev/dri/card0:/dev/dri/card0"
+      "/dev/dri/card1:/dev/dri/card1"
+      "/dev/dri/renderD128:/dev/dri/renderD128"
     ];
     ports = [
     ];
