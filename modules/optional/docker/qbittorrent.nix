@@ -14,11 +14,12 @@
     };
     volumes = [
       "qbittorrent:/config"
-      ""
+      "/tmp/downloads:/downloads"
+      "/mnt/storage/torrents:/torrents"
     ];
-    networks = ["main-network"];
+    #networks = ["main-network"];
     extraOptions = [
-      "--ip=172.18.0.14"
+      "--network=host"
     ];
   };
 }
