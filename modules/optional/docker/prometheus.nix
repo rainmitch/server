@@ -1,19 +1,17 @@
+
 {config, pkgs, lib, ...}:
 
 {
   virtualisation.oci-containers.containers."prometheus" = {
-    image = "prom/prometheus:latest";
+    image = "bitnami/prometheus:latest";
     autoStart = true;
-    pull = "always"; 
-    environment = { 
-       
+    pull = "always";
+    environment = {
+
     };
-    user = "1001:1001";
     volumes = [
-        
-    ];
-    ports = [
-      "127.0.0.1:9090/tcp"
+      "prometheus:/opt/bitnami/prometheus/data"
+      "prometheus-conf:/opt/bitnami/prometheus/conf"
     ];
     networks = ["main-network"];
     extraOptions = [

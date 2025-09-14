@@ -15,6 +15,8 @@
   };
   imports = [ # Include the results of the hardware scan.
       ./hardware/blackview.nix
+      ../modules/core/docker/node-exporter.nix
+      ../modules/optional/docker/prometheus.nix
       ../modules/optional/network/blackview.nix
       ../modules/optional/firewall/blackview.nix      
 
