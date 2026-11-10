@@ -16,7 +16,7 @@ spec:
       hostPID: true
       containers:
       - name: node-exporter
-        image: prom/node-exporter:v1.12
+        image: prom/node-exporter:v1.12.1
         args:
         - --path.rootfs=/host
         ports:
