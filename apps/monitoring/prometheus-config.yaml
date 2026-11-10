@@ -15,3 +15,6 @@ data:
           - source_labels: [__meta_kubernetes_service_name]
             regex: node-exporter
             action: keep
+          - source_labels: [__meta_kubernetes_endpoint_port_name]
+            regex: metrics
+            action: keep
