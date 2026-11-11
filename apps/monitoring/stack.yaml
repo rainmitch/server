@@ -22,19 +22,38 @@ spec:
     spec:
       serviceAccountName: prometheus
       containers:
-      - name: prometheus
-        image: prom/prometheus:v3.16.0
-        args:
-        - '--config.file=/etc/prometheus/prometheus.yml'
-        ports:
-        - containerPort: 9090
-        volumeMounts:
-        - name: config-volume
-          mountPath: /etc/prometheus/
+        - name: prometheus
+          image: prom/prometheus:v3.16.0
+          args:
+            - '--config.file=/etc/prometheus/prometheus.yml'
+            - '--storage.tsdb.path=/prometheus'
+          ports:
+            - containerPort: 9090
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/prometheus/
+            - name: storage-volume
+              mountPath: /prometheus
       volumes:
-      - name: config-volume
-        configMap:
-          name: prometheus-config
+        - name: config-volume
+          configMap:
+            name: prometheus-config
+        - name: storage-volume
+          persistentVolumeClaim:
+            claimName: prometheus-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: prometheus-pvc
+  namespace: monitoring
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 50Gi
 ---
 apiVersion: v1
 kind: Service
@@ -114,6 +133,26 @@ spec:
         image: grafana/grafana:13.3
         ports:
         - containerPort: 3000
+        volumeMounts:
+        - name: storage-volume
+          mountPath: /var/lib/grafana
+      volumes:
+        - name: storage-volume
+          persistentVolumeClaim:
+            claimName: grafana-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana-pvc
+  namespace: monitoring
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 10Gi
 ---
 apiVersion: v1
 kind: Service
