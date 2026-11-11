@@ -253,6 +253,8 @@ data:
   default-setting.yaml: |-
     priority-class: "longhorn-critical"
     disable-revision-counter: "{\"v1\":\"true\"}"
+    deletion-confirmation: false
+    default-data-path: /var/mnt/longhorn-storage
 ---
 # Source: longhorn/templates/storageclass.yaml
 apiVersion: v1
