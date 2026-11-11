@@ -6446,6 +6446,7 @@ spec:
           mountPropagation: Bidirectional
         - name: longhorn-storage
           mountPath: /var/mnt/longhorn-storage
+          mountPropagation: Bidirectional
         - name: longhorn-grpc-tls
           mountPath: /tls-files/
         env:
@@ -6488,7 +6489,6 @@ spec:
       - name: longhorn-storage
         hostPath:
           path: /var/mnt/longhorn-storage
-          type: DirectoryOrCreate
       - name: longhorn
         hostPath:
           path: /var/lib/longhorn/
