@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: longhorn
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/rainmitch/server.git'
+    targetRevision: HEAD
+    path: apps/longhorn
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: longhorn-system
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
