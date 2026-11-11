@@ -7,6 +7,16 @@ data:
   prometheus.yml: |
     global:
       scrape_interval: 15s
+    metric_relabel_configs:
+      - source_labels: [chip]
+        regex: '.*0000:00:18.*'
+        target_label: sensor_name
+        replacement: 'cpu_temp'
+
+      - source_labels: [chip]
+        regex: '.*0000:04:00.*'
+        target_label: sensor_name
+        replacement: 'nvme_controller'
     scrape_configs:
       - job_name: 'node-exporter'
         kubernetes_sd_configs:
