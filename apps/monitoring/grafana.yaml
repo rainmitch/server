@@ -72,7 +72,7 @@ spec:
   storageClassName: longhorn-monitoring-retain
   csi:
     driver: driver.longhorn.io
-    volumeHandle: grafana-volume-data
+    volumeHandle: pvc-grafana-2026-01
     fsType: ext4
 ---
 apiVersion: v1
