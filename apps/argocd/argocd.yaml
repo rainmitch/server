@@ -35644,6 +35644,16 @@ spec:
             weight: 5
       automountServiceAccountToken: false
       containers:
+      - name: argocd-repo-server
+        env:
+        - name: SOPS_AGE_KEY_FILE
+          value: /app/config/sops/age/keys.txt
+        volumeMounts:
+        - name: custom-tools
+          mountPath: /usr/local/bin
+        - name: sops-age
+          mountPath: /app/config/sops/age
+          readOnly: true
       - args:
         - /usr/local/bin/argocd-repo-server
         env:
@@ -35990,6 +36000,14 @@ spec:
         - mountPath: /home/argocd/params
           name: argocd-cmd-params-cm
       initContainers:
+      - name: install-ksops
+        image: viaductoss/ksops:v4.5.1
+        command: ["/bin/sh", "-c"]
+        args:
+        - echo "Installing KSOPS..." && mv ksops /custom-tools/ && mv sops /custom-tools/ && echo "Done."
+        volumeMounts:
+        - name: custom-tools
+          mountPath: /custom-tools
       - args:
         - /bin/cp /usr/local/bin/argocd /var/run/argocd/argocd && /bin/ln -sf /var/run/argocd/argocd
           /var/run/argocd/argocd-cmp-server
@@ -36014,6 +36032,8 @@ spec:
         kubernetes.io/os: linux
       serviceAccountName: argocd-repo-server
       volumes:
+      - name: custom-tools
+        emptyDir: {}
       - name: sops-age
         secret:
           secretName: sops-age
