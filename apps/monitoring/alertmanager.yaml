@@ -26,9 +26,6 @@ spec:
               mountPath: /etc/alertmanager/
       volumes:
         - name: config-volume
-          configMap:
-            name: alertmanager-config
-        - name: config-volume
           secret:
             secretName: alertmanager-secret
 ---
