@@ -4,7 +4,7 @@ metadata:
   name: grafana-volume-data
   namespace: longhorn-system
 spec:
-  size: 10737418240 # 10Gi in bytes
+  size: 10737418240
   numberOfReplicas: 3
   staleReplicaTimeout: 2880
 ---
@@ -14,6 +14,6 @@ metadata:
   name: prometheus-volume-data
   namespace: longhorn-system
 spec:
-  size: 53687091200 # 50Gi in bytes
+  size: 53687091200
   numberOfReplicas: 3
   staleReplicaTimeout: 2880
