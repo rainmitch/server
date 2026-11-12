@@ -24,11 +24,3 @@ data:
             annotations:
               summary: "Node {{ $labels.node }} is burning hot!"
               description: "CPU temperature is at {{ $value }}°C."
-          - alert: DummyHighTemperatureCritical
-            expr: max by(node) (node_hwmon_temp_celsius{sensor_name="cpu_temp"}) >= 40
-            for: 1m
-            labels:
-              severity: critical
-            annotations:
-              summary: "Node {{ $labels.node }} is burning hot!"
-              description: "CPU temperature is at {{ $value }}°C."
