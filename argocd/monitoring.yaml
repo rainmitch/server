@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: 'https://github.com/rainmitch/server.git'
     targetRevision: HEAD
-    path: apps/monitoring # Points to where your DaemonSet and Deployments live
+    path: apps/monitoring
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: monitoring

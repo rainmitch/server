@@ -4,6 +4,8 @@ metadata:
   name: monitoring
   labels:
     pod-security.kubernetes.io/enforce: privileged
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
 ---
 apiVersion: apps/v1
 kind: Deployment
