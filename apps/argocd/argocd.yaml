@@ -35647,6 +35647,8 @@ spec:
       - args:
         - /usr/local/bin/argocd-repo-server
         env:
+        - name: SOPS_AGE_KEY_FILE
+          value: /app/config/sops/age/keys.txt
         - name: REDIS_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -35964,6 +35966,9 @@ spec:
           seccompProfile:
             type: RuntimeDefault
         volumeMounts:
+        - name: sops-age
+          mountPath: /app/config/sops/age
+          readOnly: true
         - mountPath: /app/config/ssh
           name: ssh-known-hosts
         - mountPath: /app/config/tls
@@ -36009,6 +36014,9 @@ spec:
         kubernetes.io/os: linux
       serviceAccountName: argocd-repo-server
       volumes:
+      - name: sops-age
+        secret:
+          secretName: sops-age
       - configMap:
           name: argocd-ssh-known-hosts-cm
         name: ssh-known-hosts
