@@ -7,6 +7,15 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "-1"
 ---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: longhorn-monitoring-retain
+provisioner: driver.longhorn.io
+reclaimPolicy: Retain
+volumeBindingMode: Immediate
+allowVolumeExpansion: true
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -45,7 +54,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: longhorn
+  storageClassName: longhorn-monitoring-retain
   resources:
     requests:
       storage: 10Gi
