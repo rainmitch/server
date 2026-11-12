@@ -35651,8 +35651,8 @@ spec:
         env:
         - name: SOPS_AGE_KEY_FILE
           value: /app/config/sops/age/keys.txt
-        - name: XDG_CONFIG_HOME
-          value: /custom-bins
+        - name: PATH
+          value: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/custom-bins"
         - name: REDIS_PASSWORD
           valueFrom:
             secretKeyRef:
