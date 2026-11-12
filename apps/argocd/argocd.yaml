@@ -35651,8 +35651,8 @@ spec:
         env:
         - name: SOPS_AGE_KEY_FILE
           value: /app/config/sops/age/keys.txt
-        - name: PATH
-          value: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/custom-bins"
+        - name: XDG_CONFIG_HOME
+          value: /custom-bins
         - name: REDIS_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -35998,7 +35998,7 @@ spec:
       initContainers:
       - name: install-ksops
         image: viaductoss/ksops:v4.5.1
-        command: ["/usr/local/bin/ksops", "install", "/custom-bins"]
+        command: ["/usr/local/bin/ksops", "install", "--with-kustomize", "/custom-bins"]
         args:
         - echo "Installing KSOPS..." && mv ksops /custom-tools/ && mv sops /custom-tools/ && echo "Done."
         volumeMounts:
