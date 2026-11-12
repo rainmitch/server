@@ -35996,7 +35996,7 @@ spec:
       initContainers:
       - name: install-ksops
         image: viaductoss/ksops:v4.5.1
-        command: ["/bin/sh", "-c"]
+        command: ["/usr/local/bin/ksops", "install", "--with-kustomize", "/custom-tools"]
         args:
         - echo "Installing KSOPS..." && mv ksops /custom-tools/ && mv sops /custom-tools/ && echo "Done."
         volumeMounts:
