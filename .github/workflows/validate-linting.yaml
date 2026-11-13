@@ -18,4 +18,4 @@ jobs:
           config_data: |
             rules:
               document-start:
-                present: false
+                present: true
