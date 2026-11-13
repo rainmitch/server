@@ -55,6 +55,7 @@ spec:
   storageClassName: longhorn-monitoring-retain
   csi:
     driver: driver.longhorn.io
+    volumeHandle: pvc-prometheus-2026-01
     fsType: ext4
 ---
 apiVersion: v1
