@@ -4,7 +4,7 @@ metadata:
   name: pvc-grafana-2026-01
   namespace: longhorn-system
 spec:
-  size: 10737418240 # 10Gi in bytes
+  size: "10Gi"
   numberOfReplicas: 2
   frontend: blockdev
 ---
@@ -14,6 +14,6 @@ metadata:
   name: pvc-prometheus-2026-01
   namespace: longhorn-system
 spec:
-  size: 53687091200 # 50Gi in bytes
+  size: "50Gi"
   numberOfReplicas: 2
   frontend: blockdev
