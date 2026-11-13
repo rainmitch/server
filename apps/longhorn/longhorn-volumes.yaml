@@ -1,0 +1,19 @@
+apiVersion: longhorn.io/v1beta2
+kind: Volume
+metadata:
+  name: pvc-grafana-2026-01
+  namespace: longhorn-system
+spec:
+  size: 10737418240 # 10Gi in bytes
+  numberOfReplicas: 2
+  frontend: blockdev
+---
+apiVersion: longhorn.io/v1beta2
+kind: Volume
+metadata:
+  name: pvc-prometheus-2026-01
+  namespace: longhorn-system
+spec:
+  size: 53687091200 # 50Gi in bytes
+  numberOfReplicas: 2
+  frontend: blockdev
