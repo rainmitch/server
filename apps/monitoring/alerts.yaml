@@ -91,24 +91,45 @@ data:
               description: "The Linux kernel has terminated a process due to out-of-memory conditions on node {{ $labels.node }}."
       - name: k8s.rules
         rules:
-          - alert: KubernetesPodOomKilled
-            expr: kube_pod_container_status_last_terminated_reason{reason="OOMKilled"} == 1 and increase(kube_pod_container_status_restarts_total[5m]) > 0
+          - alert: PodOomKilled
+            expr: |
+              (
+                kube_pod_container_status_last_terminated_reason{reason="OOMKilled"} == 1
+                and
+                increase(kube_pod_container_status_restarts_total[5m]) > 0
+              )
+              * on(pod, namespace) group_left(node)
+              kube_pod_info
             for: 0m
             labels:
               severity: critical
             annotations:
               summary: "Pod {{ $labels.pod }} was OOMKilled"
               description: "Container {{ $labels.container }} in namespace {{ $labels.namespace }} was terminated because it exceeded its memory limit."
-          - alert: KubernetesPodMemoryUsageHigh
-            expr: container_memory_working_set_bytes{container!="", container!="POD"} / container_spec_memory_limit_bytes{container!="", container!="POD"} > 0.85
+          - alert: PodMemoryUsageHigh
+            expr: |
+              (
+                container_memory_working_set_bytes{container!="", container!="POD"}
+                /
+                (container_spec_memory_limit_bytes{container!="", container!="POD"} > 0) > 0.85
+              )
+              * on(pod, namespace) group_left(node)
+              kube_pod_info
             for: 10m
             labels:
               severity: warning
             annotations:
               summary: "Pod {{ $labels.pod }} memory usage is high"
               description: "Container {{ $labels.container }} in namespace {{ $labels.namespace }} is using over 85% of its memory limit."
-          - alert: KubernetesPodCpuUsageHigh
-            expr: sum(rate(container_cpu_usage_seconds_total{container!="", container!="POD"}[5m])) by (namespace, pod, container) / sum(container_spec_cpu_quota{container!="", container!="POD"} / container_spec_cpu_period) by (namespace, pod, container) > 0.85
+          - alert: PodCpuUsageHigh
+            expr: |
+              (
+                sum by (namespace, pod, container) (rate(container_cpu_usage_seconds_total{container!="", container!="POD"}[5m]))
+                /
+                sum by (namespace, pod, container) (container_spec_cpu_quota{container!="", container!="POD"} / container_spec_cpu_period) > 0.85
+              )
+              * on(pod, namespace) group_left(node)
+              kube_pod_info
             for: 10m
             labels:
               severity: warning
@@ -116,7 +137,14 @@ data:
               summary: "Pod {{ $labels.pod }} CPU usage is high"
               description: "Container {{ $labels.container }} in namespace {{ $labels.namespace }} is using over 85% of its CPU limit for 15 minutes."
           - alert: PodCpuThrottlingHigh
-            expr: rate(container_cpu_cfs_throttled_seconds_total{container!="", container!="POD"}[5m]) > 0.25
+            expr: |
+              (
+                rate(
+                  container_cpu_cfs_throttled_seconds_total{container!="", container!="POD"}[5m]
+                ) > 0.25
+              )
+              * on(pod, namespace) group_left(node)
+              kube_pod_info
             for: 10m
             labels:
               severity: warning
