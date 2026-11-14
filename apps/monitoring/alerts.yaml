@@ -88,7 +88,7 @@ data:
               severity: critical
             annotations:
               summary: "Physical network interface down on node {{ $labels.node }}"
-              description: "Primary network interface {{ $labels.device }} has dropped status to down.""
+              description: "Primary network interface {{ $labels.device }} has dropped status to down."
           - alert: TcpRetransmissionsWarning
             expr: rate(node_netstat_Tcp_RetransSegs[5m]) / rate(node_netstat_Tcp_OutSegs[5m]) > 0.01
             for: 5m
