@@ -59,6 +59,8 @@ provisioner: driver.longhorn.io
 reclaimPolicy: Retain
 volumeBindingMode: Immediate
 allowVolumeExpansion: true
+parameters:
+  recurringJobSelector: "[]"
 ---
 apiVersion: v1
 kind: PersistentVolume
