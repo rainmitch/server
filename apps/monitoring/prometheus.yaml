@@ -210,6 +210,23 @@ data:
           - targets: ['smartctl-exporter.monitoring.svc.cluster.local:9633']
             labels:
               environment: 'production'
+      - job_name: 'amd-gpu'
+        kubernetes_sd_configs:
+          - role: endpoints
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_service_name]
+            regex: amd-device-metrics-exporter
+            action: keep
+          - source_labels: [__meta_kubernetes_namespace]
+            regex: monitoring
+            action: keep
+          - source_labels: [__meta_kubernetes_pod_node_name]
+            target_label: node
+            action: replace
+        static_configs:
+          - targets: ['amd-device-metrics-exporter.monitoring.svc.cluster.local:9633']
+            labels:
+              environment: 'production'
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
