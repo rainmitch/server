@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: smartctl-exporter
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: smartctl-exporter
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: smartctl-exporter
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: smartctl-exporter
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9633"
+        prometheus.io/path: "/metrics"
+    spec:
+      # If you only want it to run on worker nodes with physical disks, 
+      # add a nodeSelector or tolerations here.
+      containers:
+        - name: smartctl-exporter
+          image: quay.io/prometheuscommunity/smartctl-exporter:v0.15.0
+          args:
+            - "--smartctl.path=/usr/sbin/smartctl"
+            - "--smartctl.interval=120s" # Polls every 2 minutes to save disk wear
+          securityContext:
+            privileged: true
+          ports:
+            - containerPort: 9633
+              name: metrics
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 10m
+              memory: 32Mi
+          volumeMounts:
+            - name: host-dev
+              mountPath: /dev
+            - name: host-udev
+              mountPath: /run/udev
+      volumes:
+        - name: host-dev
+          hostPath:
+            path: /dev
+        - name: host-udev
+          hostPath:
+            path: /run/udev
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: smartctl-exporter
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: smartctl-exporter
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9633
+      targetPort: metrics
+      name: metrics
+  selector:
+    app.kubernetes.io/name: smartctl-exporter
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: smartctl-exporter
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: smartctl-exporter
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: smartctl-exporter
+  endpoints:
+    - port: metrics
+      interval: 120s
+      scrapeTimeout: 10s

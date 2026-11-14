@@ -8,5 +8,6 @@ resources:
   - kube-state-metrics.yaml
   - node-exporter.yaml
   - prometheus.yaml
+  - smartctl-exporter.yaml
 generators:
   - alertmanager-secret-generator.yaml
