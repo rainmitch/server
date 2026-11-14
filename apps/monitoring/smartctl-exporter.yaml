@@ -19,6 +19,9 @@ spec:
         prometheus.io/port: "9633"
         prometheus.io/path: "/metrics"
     spec:
+      securityContext:
+        runAsUser: 0
+        runAsNonRoot: false
       # If you only want it to run on worker nodes with physical disks, 
       # add a nodeSelector or tolerations here.
       containers:
