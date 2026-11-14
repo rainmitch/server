@@ -14,10 +14,6 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: smartctl-exporter
-      annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "9633"
-        prometheus.io/path: "/metrics"
     spec:
       securityContext:
         runAsUser: 0
