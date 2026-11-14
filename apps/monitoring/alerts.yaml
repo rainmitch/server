@@ -25,7 +25,7 @@ data:
             annotations:
               summary: "Node {{ $labels.node }} is burning hot!"
               description: "CPU temperature is at {{ $value }}°C."
-          - alert: DriveSmartStatusFailing
+          - alert: NodeDriveSmartStatusFailing
             expr: sum by(node, device) (smartctl_device_smart_status{node!=""}) == 0
             for: 0m
             labels:
@@ -33,7 +33,7 @@ data:
             annotations:
               summary: "Drive SMART health check failed (Node {{ $labels.node }}, Device {{ $labels.device }})"
               description: "The drive has reported a failing SMART status. Replace it immediately."
-          - alert: DriveReallocatedSectors
+          - alert: NodeDriveReallocatedSectors
             expr: sum by(node, device) (smartctl_device_attribute{node!="", attribute_id="5", attribute_value_type="raw"}) > 0
             for: 5m
             labels:
@@ -41,7 +41,7 @@ data:
             annotations:
               summary: "Drive has reallocated sectors (Node {{ $labels.node }}, Device {{ $labels.device }})"
               description: "Attribute 5 (Reallocated Sectors Count) is greater than 0. Monitor the drive closely for further degradation."
-          - alert: NvmeWearLimitReached
+          - alert: NodeNvmeWearLimitReached
             expr: sum by(node, device) (smartctl_device_percentage_used{node!=""}) >= 90
             for: 15m
             labels:
@@ -49,7 +49,7 @@ data:
             annotations:
               summary: "NVMe drive wear level high (Node {{ $labels.node }}, Device {{ $labels.device }})"
               description: "The NVMe drive has consumed 90% or more of its rated write endurance."
-          - alert: DriveTemperatureHigh
+          - alert: NodeDriveTemperatureHigh
             expr: sum by(node, device) (smartctl_device_temperature{node!="", temperature_type="current"}) > 65
             for: 5m
             labels:
@@ -57,6 +57,90 @@ data:
             annotations:
               summary: "Drive temperature is high (Node {{ $labels.node }}, Device {{ $labels.device }})"
               description: "The drive temperature has exceeded 65°C for over 5 minutes. Check case airflow or cooling fans."
+          - alert: NodeCPULoadHigh
+            expr: 1 - (avg by (node) (rate(node_cpu_seconds_total{mode="idle"}[5m]))) > 0.9
+            for: 15m
+            labels:
+              severity: warning
+            annotations:
+              summary: "Sustained high CPU usage on node {{ $labels.node }}"
+              description: "CPU usage has been above 90% for the last 15 minutes."
+          - alert: NodeMemoryUsageHigh
+            expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes > 0.8
+            for: 15m
+            labels:
+              severity: warning
+            annotations:
+              summary: "Sustained high memory usage on node {{ $labels.node }}"
+              description: "Memory usage has been above 80% for the last 15 minutes."
+          - alert: NodeMemoryUsageCritical
+            expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes > 0.95
+            for: 5m
+            labels:
+              severity: critical
+            annotations:
+              summary: "Sustained critical memory usage on node {{ $labels.node }}"
+              description: "Memory usage has been above 95% for the last 5 minutes."
+          - alert: NodeOomKillDetected
+            expr: increase(node_vmstat_oom_kill[5m]) > 0
+            for: 0m
+            labels:
+              severity: critical
+            annotations:
+              summary: "OOM killer triggered on node {{ $labels.node }}"
+              description: "The Linux kernel has terminated a process due to out-of-memory conditions on node {{ $labels.node }}."
+      - name: k8s.rules
+        rules:
+          - alert: KubernetesPodOomKilled
+            expr: kube_pod_container_status_last_terminated_reason{reason="OOMKilled"} == 1 and increase(kube_pod_container_status_restarts_total[5m]) > 0
+            for: 0m
+            labels:
+              severity: critical
+            annotations:
+              summary: "Pod {{ $labels.pod }} was OOMKilled"
+              description: "Container {{ $labels.container }} in namespace {{ $labels.namespace }} was terminated because it exceeded its memory limit."
+          - alert: KubernetesPodMemoryUsageHigh
+            expr: container_memory_working_set_bytes{container!="", container!="POD"} / container_spec_memory_limit_bytes{container!="", container!="POD"} > 0.85
+            for: 10m
+            labels:
+              severity: warning
+            annotations:
+              summary: "Pod {{ $labels.pod }} memory usage is high"
+              description: "Container {{ $labels.container }} in namespace {{ $labels.namespace }} is using over 85% of its memory limit."
+          - alert: KubernetesPodCpuUsageHigh
+            expr: sum(rate(container_cpu_usage_seconds_total{container!="", container!="POD"}[5m])) by (namespace, pod, container) / sum(container_spec_cpu_quota{container!="", container!="POD"} / container_spec_cpu_period) by (namespace, pod, container) > 0.85
+            for: 10m
+            labels:
+              severity: warning
+            annotations:
+              summary: "Pod {{ $labels.pod }} CPU usage is high"
+              description: "Container {{ $labels.container }} in namespace {{ $labels.namespace }} is using over 85% of its CPU limit for 15 minutes."
+          - alert: PodCpuThrottlingHigh
+            expr: rate(container_cpu_cfs_throttled_seconds_total{container!="", container!="POD"}[5m]) > 0.25
+            for: 10m
+            labels:
+              severity: warning
+            annotations:
+              summary: "Pod {{ $labels.pod }} is heavily CPU throttled"
+              description: "Container {{ $labels.container }} in namespace {{ $labels.namespace }} is experiencing high CPU throttling."
+      - name: storage.rules
+        rules:
+          - alert: DiskSpaceUsageWarning
+            expr: (node_filesystem_size_bytes{fstype!~"tmpfs|overlay|aufs|squashfs|proc|sysfs|devtmpfs|fuse.*"} - node_filesystem_free_bytes{fstype!~"tmpfs|overlay|aufs|squashfs|proc|sysfs|devtmpfs|fuse.*"}) / node_filesystem_size_bytes{fstype!~"tmpfs|overlay|aufs|squashfs|proc|sysfs|devtmpfs|fuse.*"} > 0.85
+            for: 15m
+            labels:
+              severity: warning
+            annotations:
+              summary: "Disk space running low on node {{ $labels.node }}"
+              description: "Mountpoint {{ $labels.mountpoint }} on device {{ $labels.device }} is at {{ $value | humanizePercentage }} capacity."
+          - alert: DiskSpaceUsageCritical
+            expr: (node_filesystem_size_bytes{fstype!~"tmpfs|overlay|aufs|squashfs|proc|sysfs|devtmpfs|fuse.*"} - node_filesystem_free_bytes{fstype!~"tmpfs|overlay|aufs|squashfs|proc|sysfs|devtmpfs|fuse.*"}) / node_filesystem_size_bytes{fstype!~"tmpfs|overlay|aufs|squashfs|proc|sysfs|devtmpfs|fuse.*"} > 0.95
+            for: 5m
+            labels:
+              severity: critical
+            annotations:
+              summary: "Disk space critically low on node {{ $labels.node }}"
+              description: "Mountpoint {{ $labels.mountpoint }} on device {{ $labels.device }} is at {{ $value | humanizePercentage }} capacity. Immediate attention required."
       - name: network.rules
         rules:
           - alert: NodeNetworkPacketDrops
