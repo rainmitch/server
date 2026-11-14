@@ -22,6 +22,7 @@ spec:
           image: prom/prometheus:v3.16.0
           args:
             - '--config.file=/etc/prometheus/prometheus.yml'
+            - "--storage.tsdb.retention.time=45d"
             - '--storage.tsdb.path=/prometheus'
             - '--web.enable-admin-api'
           ports:
