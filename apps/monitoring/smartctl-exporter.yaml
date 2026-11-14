@@ -29,6 +29,10 @@ spec:
             - "--smartctl.interval=120s" # Polls every 2 minutes to save disk wear
           securityContext:
             privileged: true
+            capabilities:
+              add:
+                - SYS_ADMIN
+                - SYS_RAWIO
           ports:
             - containerPort: 9633
               name: metrics
@@ -42,6 +46,7 @@ spec:
           volumeMounts:
             - name: host-dev
               mountPath: /dev
+              mountPropagation: HostToContainer
             - name: host-udev
               mountPath: /run/udev
       volumes:
