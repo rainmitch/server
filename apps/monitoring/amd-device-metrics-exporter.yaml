@@ -18,7 +18,7 @@ spec:
       hostNetwork: true
       containers:
       - name: exporter
-        image: rocm/device-metrics-exporter:v1.5.4
+        image: rocm/device-metrics-exporter:v1.5.3
         imagePullPolicy: Always
         securityContext:
           privileged: true
