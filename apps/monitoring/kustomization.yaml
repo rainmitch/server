@@ -9,5 +9,6 @@ resources:
   - node-exporter.yaml
   - prometheus.yaml
   - smartctl-exporter.yaml
+  - amd-device-metrics-exporter.yaml
 generators:
   - alertmanager-secret-generator.yaml
