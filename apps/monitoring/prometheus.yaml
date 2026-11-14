@@ -189,8 +189,6 @@ data:
             replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor
             target_label: __metrics_path__
       - job_name: 'smartctl-exporter'
-        kubernetes_sd_configs:
-          - role: pod
         relabel_configs:
           - source_labels: [__meta_kubernetes_pod_node_name]
             target_label: node
