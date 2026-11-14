@@ -20,6 +20,7 @@ spec:
         image: prom/node-exporter:v1.12.1
         args:
         - --path.rootfs=/host
+        - --collector.netdev.address-info
         ports:
         - containerPort: 9100
           name: metrics
