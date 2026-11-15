@@ -173,9 +173,19 @@ data:
         rules:
           - alert: NodeNetworkPacketDrops
             expr: |
-              (increase(node_network_receive_drop_total[5m]) > 10)
-              or
-              (increase(node_network_transmit_drop_total[5m]) > 10)
+              (
+                (
+                  increase(node_network_receive_drop_total[5m])
+                  +
+                  increase(node_network_transmit_drop_total[5m])
+                )
+                /
+                (
+                  increase(node_network_receive_packets_total[5m])
+                  +
+                  increase(node_network_transmit_packets_total[5m])
+                )
+              ) > 0.01
             for: 5m
             labels:
               severity: warning
