@@ -55,6 +55,9 @@ spec:
       - name: sys
         hostPath:
           path: /sys
+      - name: kubelet-pods
+        hostPath:
+          path: /var/lib/kubelet/pod-resources
 ---
 apiVersion: v1
 kind: Service
