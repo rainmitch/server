@@ -80,7 +80,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: sillytavern-pvc
-  namespace: monitoring
+  namespace: ai-stack
 spec:
   accessModes:
     - ReadWriteOnce
